@@ -1,3 +1,5 @@
+[![Rust](https://github.com/cosmir17/seank-rust-study-codes/actions/workflows/rust.yml/badge.svg)](https://github.com/cosmir17/seank-rust-study-codes/actions/workflows/rust.yml)
+
 # My Rust Learning Journey
 
 ## Introduction
