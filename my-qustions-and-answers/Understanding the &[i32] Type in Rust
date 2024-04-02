@@ -1,0 +1,33 @@
+what is the following type in Rust?
+
+
+Copy code
+&[i32]
+In Rust, &[i32] represents a borrowed slice of i32 values.
+
+A slice is a dynamically-sized view into a contiguous sequence of elements in memory. It consists of a pointer to the first element and the length of the slice.
+
+In this specific case:
+
+i32 is the element type, representing a 32-bit signed integer.
+& denotes that it is a reference, meaning it borrows the slice rather than owning it.
+So, &[i32] is a borrowed slice of i32 elements. The slice itself is not owned by the current scope but is instead borrowed from somewhere else.
+
+Slices are often used when you want to pass a portion of an array or vector to a function without transferring ownership. They provide a safe and efficient way to reference contiguous elements in memory without copying the data.
+
+Here's an example of using a slice:
+
+rust
+
+
+Copy code
+fn sum(values: &[i32]) -> i32 {
+    values.iter().sum()
+}
+
+fn main() {
+    let numbers = [1, 2, 3, 4, 5];
+    let result = sum(&numbers);
+    println!("Sum: {}", result);
+}
+In this example, the sum function takes a borrowed slice of i32 values and computes their sum using the iter().sum() method. The &numbers syntax creates a slice that borrows the entire numbers array.

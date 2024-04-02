@@ -1,0 +1,9 @@
+[package]
+name = "seank-rust-study-code"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["chat_program_study", "code_example_study", "kata_practice_project"]
+
+[dependencies]

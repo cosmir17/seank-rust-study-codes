@@ -1,0 +1,16 @@
+
+I have just attended a presentation. Async C++/Rust Interoperability
+
+Bringing asynchronous C++ code to the safe grounds of Rust can be scary. Segmentation faults and memory leaks can make their way across the bridge and hide under the safe wrapper-covers. So let us delve into the inner workings of asynchronous interaction and ensure safe C++/Rust interoperability using CXX library.
+
+Great! The presentation you attended, "Async C++/Rust Interoperability", seems to focus on the challenges and solutions of integrating asynchronous C++ code with Rust using the CXX library.
+
+Here are some key points that the presentation likely covered:
+
+Asynchronous programming: Asynchronous programming allows tasks to run concurrently without blocking the main thread, enabling better resource utilization and responsiveness.
+C++/Rust interoperability: Rust, being a systems programming language with a focus on safety and concurrency, can benefit from interoperating with existing C++ codebases. However, the differences in memory management and asynchronous programming models between the two languages can pose challenges.
+Safety concerns: When integrating C++ code with Rust, there is a risk of introducing segmentation faults and memory leaks into the Rust codebase, which goes against Rust's core principles of memory safety and thread safety.
+CXX library: The CXX library is a tool that helps bridge the gap between C++ and Rust, allowing seamless interoperability. It provides a safe and efficient way to define and call C++ functions from Rust and vice versa.
+Asynchronous interaction: The presentation likely delved into the specifics of how asynchronous C++ code can be safely integrated with Rust using the CXX library. This may involve topics such as futures, async/await, and runtime differences between the two languages.
+Best practices: To ensure safe C++/Rust interoperability, the presentation might have covered best practices, such as proper memory management, handling of ownership and lifetimes, and avoiding undefined behavior.
+Overall, the presentation aimed to provide insights and techniques for developers looking to leverage the strengths of both C++ and Rust in their asynchronous projects while maintaining the safety guarantees provided by Rust.

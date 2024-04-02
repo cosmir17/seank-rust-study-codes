@@ -1,0 +1,43 @@
+In the following Rust code, Why wasn't values' ownership moved after 'values.len() > 5' and be able to be used again for 'match values.len() {' ?
+
+
+Copy code
+fn main() {
+    // Defining a mutable variable with 'let mut'
+    // Using the macro vec! to create a vector
+    let mut values = vec![1, 2, 3, 4];
+
+    for value in &values {
+        println!("value = {}", value);
+    }
+
+    if values.len() > 5 {
+        println!("List is longer than five items");
+    }
+
+    // Pattern matching
+    match values.len() {
+        0 => println!("Empty"),
+        1 => println!("One value"),
+        // pattern matching can use ranges of integers
+        2..=10 => println!("Between two and ten values"),
+        11 => println!("Eleven values"),
+        // A `_` pattern is called a "wildcard", it matches any value
+        _ => println!("Many values"),
+    };
+
+    // while loop with predicate and pattern matching using let
+    while let Some(value) = values.pop() {
+        println!("value = {value}"); // using curly brackets to format a local variable
+    }
+}
+In the provided Rust code, the ownership of the values vector is not moved after the values.len() > 5 condition because methods like len() only borrow the value, they don't take ownership.
+
+In Rust, when you call a method or function, it can either take ownership of the value or borrow it. Borrowing means that the method or function gets a reference to the value but doesn't take ownership, so the original value can still be used after the method or function call.
+
+The len() method is defined as fn len(&self) -> usize in the standard library, which means it takes an immutable reference (&self) to the vector, and returns the length of the vector as a usize value. Since it only borrows the vector, the ownership of values is not transferred, and you can continue using values after the values.len() > 5 condition.
+
+However, in the match values.len() {...} block, you are again borrowing the values vector by calling the len() method. This is allowed because the previous borrow from the values.len() > 5 condition has ended, and the ownership of values is still held by the values variable.
+
+In summary, Rust's ownership rules allow you to borrow values multiple times, as long as you don't have any overlapping mutable borrows or attempt to move the ownership away while the value is still borrowed.
+

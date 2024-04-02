@@ -1,0 +1,78 @@
+Unlike scala future code why Rust future code often uses  await method? doesn’t it make nonblocking code to block?
+
+In Rust, the await keyword is used to wait for the completion of a Future and obtain its result. When you use await, it allows the current task to be suspended until the Future is resolved, without blocking the entire thread.
+
+The use of await in Rust does not necessarily make the code blocking. Instead, it enables cooperative multitasking within the Rust runtime. When a Future is awaited, the Rust runtime can switch to executing other tasks or Futures that are ready to make progress. This allows for efficient utilization of system resources and enables concurrent execution of multiple Futures.
+
+Here are a few key points to understand about await in Rust:
+
+await is used to wait for the completion of a Future, but it does not block the entire thread. Instead, it suspends the current task and allows other tasks to run on the same thread.
+When a Future is awaited, the Rust runtime is notified that the current task is waiting for the Future to complete. The runtime can then schedule other tasks to run while the Future is pending.
+Once the Future is resolved (i.e., it has a value or an error), the await expression returns the result, and the task resumes execution from where it left off.
+The use of await allows for writing asynchronous code in a sequential style, making it easier to reason about the flow of execution.
+It's important to note that the behavior of await in Rust is different from blocking operations in other languages. In Rust, await is used in the context of asynchronous programming and is designed to work with the Rust runtime's task scheduler.
+
+In contrast, Scala's Future is a separate abstraction for representing asynchronous computations. Scala's Future doesn't have a built-in await method, but it provides other mechanisms for working with asynchronous results, such as onComplete, map, flatMap, etc.
+
+Overall, the use of await in Rust allows for writing asynchronous code in a more sequential and readable style while still leveraging the benefits of non-blocking I/O and cooperative multitasking provided by the Rust runtime.
+
+Copy
+
+
+S
+What would be scala equivalent future method of rust’s future await method?
+
+In Scala, the equivalent of Rust's await method on a Future is the Await.result method. However, it's important to note that Await.result is a blocking operation and should be used with caution.
+
+Here's an example of how you can use Await.result in Scala to wait for a Future to complete and obtain its result:
+
+scala
+
+
+Copy code
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+val future: Future[Int] = Future {
+  // Some asynchronous computation
+  42
+}
+
+// Wait for the future to complete and get the result
+val result: Int = Await.result(future, 5.seconds)
+println(result) // Output: 42
+In this example, we create a Future that represents an asynchronous computation. We then use Await.result to wait for the Future to complete and obtain its result. The second argument to Await.result specifies the maximum duration to wait for the Future to complete (in this case, 5 seconds).
+
+It's crucial to understand that Await.result blocks the current thread until the Future completes or the specified timeout is reached. This means that the thread cannot perform any other work while waiting for the Future. Therefore, it should be used sparingly and only when absolutely necessary, such as in test code or when you need to bridge between asynchronous and synchronous parts of your program.
+
+In Scala, it's generally recommended to use non-blocking operations and compose Futures using combinators like map, flatMap, foreach, onComplete, etc., rather than blocking with Await.result. This allows for better utilization of system resources and avoids potential performance bottlenecks.
+
+Here's an example of composing Futures using combinators:
+
+scala
+
+
+Copy code
+val future1: Future[Int] = Future {
+  // Asynchronous computation 1
+  10
+}
+
+val future2: Future[Int] = Future {
+  // Asynchronous computation 2
+  20
+}
+
+val composedFuture: Future[Int] = for {
+  result1 <- future1
+  result2 <- future2
+} yield result1 + result2
+
+composedFuture.onComplete {
+  case Success(result) => println(s"Result: $result")
+  case Failure(exception) => println(s"Exception occurred: $exception")
+}
+In this example, we create two Futures (future1 and future2) representing asynchronous computations. We then compose them using a for-comprehension to create a new Future (composedFuture) that combines their results. Finally, we register a callback using onComplete to handle the completion of the composed Future, either printing the result or an exception if one occurred.
+
+By using combinators and callbacks, we can write asynchronous code in a more idiomatic and non-blocking way in Scala.

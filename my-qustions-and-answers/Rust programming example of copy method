@@ -1,0 +1,37 @@
+rust programming :
+
+can you show me example of .copy method? showing both explicit and implicit
+
+Certainly! In Rust, the .copy() method is used to create a byte-for-byte copy of a value. Here are examples demonstrating both explicit and implicit usage of the .copy() method:
+
+Explicit usage of .copy():
+
+rust
+
+
+Copy code
+fn main() {
+    let x: i32 = 42;
+    let y: i32 = x.copy();
+    println!("x: {}, y: {}", x, y);
+}
+In this example, we explicitly call the .copy() method on x to create a copy of its value and assign it to y. Both x and y will have the same value of 42.
+
+Implicit usage of .copy():
+
+rust
+
+
+Copy code
+fn main() {
+    let x: i32 = 42;
+    let y: i32 = x;
+    println!("x: {}, y: {}", x, y);
+}
+In this case, we don't explicitly call the .copy() method. Instead, when we assign x to y, Rust implicitly performs a copy of the value. This is possible because i32 implements the Copy trait, which allows it to be copied implicitly.
+
+The Copy trait is implemented for many primitive types in Rust, such as i32, f64, bool, and others. When a type implements the Copy trait, it means that copying the value is a cheap operation and does not involve any deep copying or ownership transfer.
+
+It's important to note that not all types in Rust implement the Copy trait. For example, String and Vec do not implement Copy because they manage heap-allocated data and have ownership semantics. In such cases, you would need to use other methods like .clone() to create a deep copy of the value.
+
+I hope this clarifies the usage of the .copy() method in Rust!

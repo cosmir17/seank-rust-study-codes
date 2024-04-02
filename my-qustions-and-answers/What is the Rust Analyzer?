@@ -1,0 +1,14 @@
+What is rust analyzer?
+
+Rust Analyzer is a language server for the Rust programming language. It provides IDE-like features and assists developers in writing Rust code by offering the following functionality:
+
+Code completion: It suggests completions for variable names, functions, methods, and more as you type.
+Go to definition: It allows you to navigate to the definition of a symbol (function, struct, enum, etc.) by clicking on it or using a keyboard shortcut.
+Type information: It shows the type of a variable or expression when hovering over it.
+Error diagnostics: It analyzes the code and provides real-time error diagnostics, highlighting potential issues and offering suggestions for fixing them.
+Code formatting: It can automatically format Rust code according to the standard style guidelines.
+Refactoring: It supports various refactoring operations, such as renaming symbols, extracting functions, and more.
+Code lens: It provides additional information and actions inline with the code, such as showing the number of references to a symbol or offering to run tests.
+Rust Analyzer is built using the Rust compiler's libraries and aims to provide a fast and reliable editing experience for Rust developers. It is available as a plugin or extension for popular IDEs and text editors, such as Visual Studio Code, IntelliJ IDEA, Vim, and Emacs.
+
+By leveraging Rust Analyzer, developers can benefit from enhanced productivity, better code navigation, and early detection of potential errors, making the development process more efficient and enjoyable.

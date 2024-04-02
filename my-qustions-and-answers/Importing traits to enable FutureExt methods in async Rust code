@@ -1,0 +1,218 @@
+I have the following Rust code :
+
+"""
+
+
+Copy code
+// use async_std::io::BufReader;
+use async_std::prelude::*;
+use async_std::{task, io, net};
+use std::sync::Arc;
+
+use dummy_project::utils::{self, ChatResult};
+use dummy_project::{Client, Server};
+
+fn get_value(mut input: &str) -> Option<(&str, &str)> {
+    input = input.trim_start();
+
+    if input.is_empty() {
+        return None;
+    }
+
+    match input.find(char::is_whitespace) {
+        Some(whitespace) => Some((&input[0..whitespace], &input[whitespace..])),
+        None => Some((input, ""))
+    }
+}
+
+fn parse_input(line: &str) -> Option<Client> {
+    let (input, remainder) = get_value(line)?;
+
+    if input == "join" {
+        let (chat, remainder) = get_value(remainder)?;
+
+        if !remainder.trim_start().is_empty() {
+            return None;
+        }
+
+        return Some(Client::Join {chat_name: Arc::new(chat.to_string())});
+    }
+
+    else if input == "post" {
+        let (chat, remainder) = get_value(remainder)?;
+        let message = remainder.trim_start().to_string();
+
+        return Some(Client::Post{ chat_name: Arc::new(chat.to_string()), message: Arc::new(message)});
+    }
+
+    else {
+        println!("Unrecognised input: {:?}", line);
+        return None;
+    }
+}
+
+async fn send(mut send: net::TcpStream) -> ChatResult<()> {
+    println!("Options: \nJoin CHAT\npost CHAT MESSAGE");
+
+    let mut options = io::BufReader::new(io::stdin()).lines();
+
+    while let Some(option_result) = options.next().await {
+        let opt = option_result?;
+        let req = match parse_input(&opt){
+            Some(req) => req,
+            None => continue
+        };
+        utils::send_json(&mut send, &req).await?;
+        send.flush().await?;
+    }
+    Ok(())
+}
+
+async fn messages(server: net::TcpStream) -> ChatResult<()> {
+    let buf = io::BufReader::new(server);
+    let mut stream = utils::receive(buf);
+
+    while let Some(msg) = stream.next().await {
+        match msg? {
+            Server::Message { chat_name, message } => {
+                println!("Chat Name: {}\n, Message: {}\n", chat_name, message);
+            }
+            Server::Error(message) => {
+                println!("Error received: {}", message);
+            }
+        }
+    }
+    Ok(())
+}
+
+fn main() -> ChatResult<()> {
+    let addr = std::env::args().nth(1).expect("Address:PORT"); //reading from terminal for server's ip address and port it's listening to
+
+    task::block_on(async {
+        let socket = net::TcpStream::connect(addr).await?; //connect on the server using the address and the port
+        socket.set_nodelay(true)?; //it's going to disable Nagle's algorithm to reduce the latency
+        //segments are always sent as soon as possible, even if there's only small amount of data, wbhen it's not set, the data is buffered
+        //until there is a sufficient amount of data to send out, thereby avoiding the frequent sending of packets.
+        //true : send us data asap that way our client are recieing the messageas fast as can, thus avoid any unnessary delays
+
+        let send = send(socket.clone()); // create a new task to send a new message to server
+        let replies = messages(socket); // to recieve the message to the server
+
+        replies.race(send).await?; //to race each other, it allows the two tasks, send and replies to run concurrently and then we're waiting for
+        //one of them to complete, either send or replies to complete first, when that happens, we do our logic from there
+        //in the mean time, we just want to see who completes first, so we do 'race' each other
+        Ok(())
+    })
+}
+I don't know why I have the following error message :
+
+"""
+
+error[E0599]: no method named race found for opaque type impl Future<Output = Result<(), Box<(dyn std::error::Error + std::marker::Send + Sync + 'static)>>> in the current scope
+
+--> src/bin/client.rs:95:17
+
+|
+
+95 | ... replies.race(send).await?; //to race each other, it allows the two tasks, send and replies to run concurrently and then we're waiti...
+
+| ^^^^ method not found in impl Future<Output = Result<(), Box<dyn Error + Send + Sync>>>
+
+|
+
+= help: items from traits can only be used if the trait is in scope
+
+help: the following traits which provide race are implemented but not in scope; perhaps you want to import one of them
+
+|
+
+2 + use futures_lite::future::FutureExt;
+
+|
+
+2 + use futures_lite::future::FutureExt;
+
+|
+
+2 + use futures_lite::stream::StreamExt;
+
+|
+
+2 + use futures_lite::stream::StreamExt;
+
+|
+
+"""
+
+The error message suggests that the race method is not found for the Future type returned by replies and send. It seems that you need to import the appropriate trait that provides the race method.
+
+To fix this error, you can add one of the following use statements at the top of your code, as suggested by the error message:
+
+rust
+
+
+Copy code
+use futures_lite::future::FutureExt;
+or
+
+rust
+
+
+Copy code
+use futures_lite::stream::StreamExt;
+These traits provide the race method for futures and streams, respectively. Make sure you have the futures-lite crate added as a dependency in your Cargo.toml file.
+
+After adding the appropriate use statement, the race method should be available, and the error should be resolved.
+
+Additionally, make sure you have the necessary dependencies specified in your Cargo.toml file, such as async-std and futures-lite, with their respective versions.
+
+If you still encounter issues, please provide more information about your project setup and dependencies, and I'll be happy to assist you further.
+
+Copy
+
+
+[A.I. agent I used] does not have the ability to run the code it generates yet.
+I have the following Rust code : """ // use async_std::io::BufReader; use async_std::prelude::*; use async_std::{task, io, net}; use std::sync::Arc; use dummy_project::utils::{self, ChatResult}; us
+PASTED
+S
+The error message suggests that the race method is not found for the types of replies and send. It seems like you are using the async-std crate, but the race method is not directly available in that crate.
+
+To fix this error, you can use the futures crate, which provides the race method through the FutureExt trait. Here's how you can modify your code:
+
+Add the futures crate to your dependencies in Cargo.toml:
+toml
+
+
+Copy code
+[
+dependencies
+]
+futures = "0.3"
+Import the FutureExt trait at the top of your main.rs file:
+rust
+
+
+Copy code
+use futures::future::FutureExt;
+Update the main function to use futures::join! instead of race:
+rust
+
+
+Copy code
+fn main() -> ChatResult<()> {
+    let addr = std::env::args().nth(1).expect("Address:PORT");
+
+    task::block_on(async {
+        let socket = net::TcpStream::connect(addr).await?;
+        socket.set_nodelay(true)?;
+
+        let send_task = send(socket.clone());
+        let replies_task = messages(socket);
+
+        futures::join!(send_task, replies_task);
+        Ok(())
+    })
+}
+The futures::join! macro allows you to concurrently run multiple futures and wait for all of them to complete. In this case, it will run both send_task and replies_task concurrently and wait for both of them to finish.
+
+With these changes, your code should compile without the "no method named race found" error.

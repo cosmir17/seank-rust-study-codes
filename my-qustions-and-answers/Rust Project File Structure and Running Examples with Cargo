@@ -1,0 +1,195 @@
+Rust :
+
+I have a project with many files with 'main' functions. I use them for my study. I put them under 'my-project/examples/study'.
+
+I also have a chat project that contains server and client files with main function respectively. I put this project in 'chat_program' folder under 'my_project' folder. under chat_project, I have bin folder, lib.rs and utils.rs. inside bin folder, I have rs files containing server and client main functions.
+
+I couldn't put them under 'my-project/src' folder because 'src' can have only one main function. That's why I put them in 'my-project/examples' folder.
+
+When I ran 'cargo run --example', I only see 'study' in the list. What have I done wrong?
+
+In your project structure, you have the examples directory and the chat_program directory separately. The examples directory is a special directory recognized by Cargo for storing example files, and running cargo run --example will only list the files directly under the examples directory.
+
+To include the chat_program project in the list of examples, you have a couple of options:
+
+Move the chat_program directory inside the examples directory. Your project structure would look like this:
+
+Copy code
+my-project/
+  ├── examples/
+  │   ├── study/
+  │   │   └── ...
+  │   └── chat_program/
+  │       ├── bin/
+  │       │   ├── server.rs
+  │       │   └── client.rs
+  │       ├── lib.rs
+  │       └── utils.rs
+  └── ...
+With this structure, running cargo run --example will list both study and chat_program as available examples.
+
+If you want to keep the chat_program directory separate from the examples directory, you can create a separate Cargo workspace. A workspace allows you to have multiple related packages in the same project. Your project structure would look like this:
+
+Copy code
+my-project/
+  ├── Cargo.toml
+  ├── examples/
+  │   └── study/
+  │       └── ...
+  └── chat_program/
+      ├── Cargo.toml
+      ├── src/
+      │   ├── bin/
+      │   │   ├── server.rs
+      │   │   └── client.rs
+      │   ├── lib.rs
+      │   └── utils.rs
+      └── ...
+In this case, you would have a top-level Cargo.toml file that defines the workspace and lists the examples and chat_program directories as members. Each member directory would have its own Cargo.toml file.
+
+To run the examples in the examples directory, you would use cargo run --example from the top-level directory. To run the chat_program project, you would navigate to the chat_program directory and use cargo run --bin server or cargo run --bin client to run the respective binaries.
+
+Choose the option that best fits your project structure and requirements. If you want to keep the chat_program project separate and have more flexibility, creating a Cargo workspace might be the way to go.
+
+Copy
+
+
+[A.I. agent I used] does not have the ability to run the code it generates yet.
+S
+I am using Rustover. Is there a way to have multi level project so that I don't need to import the sub project manually and open in different Rustover windows.
+
+Yes, you can have a multi-level project in Rust and use Rustover to work with it. Rustover supports Cargo workspaces, which allow you to manage multiple related packages within a single project.
+
+To set up a multi-level project using Cargo workspaces, you can follow these steps:
+
+Create a new directory for your project and navigate to it in the terminal.
+Create a new file named Cargo.toml in the project root directory. This file will define the workspace and list the member packages. Here's an example Cargo.toml file:
+toml
+
+
+Copy code
+[
+workspace
+]
+members = [
+    "examples/study",
+    "chat_program",
+]
+In this example, we define a workspace with two members: examples/study and chat_program.
+
+Create the corresponding directories for each member package:
+
+Copy code
+my-project/
+  ├── Cargo.toml
+  ├── examples/
+  │   └── study/
+  │       └── ...
+  └── chat_program/
+      ├── Cargo.toml
+      ├── src/
+      │   ├── bin/
+      │   │   ├── server.rs
+      │   │   └── client.rs
+      │   ├── lib.rs
+      │   └── utils.rs
+      └── ...
+Make sure each member package has its own Cargo.toml file defining its dependencies and other package-specific configurations.
+
+Open the project root directory in Rustover. Rustover should automatically detect the Cargo workspace and display the member packages in the project tree.
+You can navigate between the member packages within Rustover, and Rustover will handle the necessary imports and dependencies automatically.
+To run a specific example or binary, you can use the Cargo commands from the terminal within Rustover:
+
+To run an example from the examples/study directory:
+
+Copy code
+cargo run --example <example-name>
+To run the server or client binary from the chat_program package:
+
+Copy code
+cargo run --bin server
+cargo run --bin client
+Rustover should provide a seamless experience for working with multi-level projects using Cargo workspaces. It will handle the necessary imports and allow you to easily navigate between different packages within the workspace.
+
+Copy
+
+
+[A.I. agent I used] does not have the ability to run the code it generates yet.
+S
+I got the following error message :
+
+Execution failed (exit code 101).
+
+/Users/sk/.cargo/bin/cargo metadata --verbose --format-version 1 --all-features --filter-platform x86_64-apple-darwin
+
+stdout : error: failed to parse manifest at /Users/sk/Rustrover-Projects/seank-rust-study-code/Cargo.toml
+
+Caused by:
+
+no targets specified in the manifest
+
+either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+stderr :
+
+The error message indicates that your project's Cargo.toml file is missing the necessary target configuration. In a Rust project, you need to specify at least one of the following:
+
+src/lib.rs: Specifies a library target.
+src/main.rs: Specifies a binary target.
+[lib] section: Defines a library target in the Cargo.toml file.
+[[bin]] section: Defines one or more binary targets in the Cargo.toml file.
+To resolve this error, you need to update your project's Cargo.toml file to include the appropriate target configuration.
+
+Since you have multiple files with main functions in your project, you can use the [[bin]] section to specify each binary target. Here's an example of how you can structure your Cargo.toml file:
+
+toml
+
+
+Copy code
+[
+workspace
+]
+members = [
+    "examples/study",
+    "chat_program",
+]
+
+[
+package
+]
+name = "my-project"
+version = "0.1.0"
+edition = "2021"
+
+[[
+bin
+]]
+name = "study_example_1"
+path = "examples/study/example_1.rs"
+
+[[
+bin
+]]
+name = "study_example_2"
+path = "examples/study/example_2.rs"
+
+[[
+bin
+]]
+name = "server"
+path = "chat_program/src/bin/server.rs"
+
+[[
+bin
+]]
+name = "client"
+path = "chat_program/src/bin/client.rs"
+In this example, we define the workspace with the examples/study and chat_program directories as members.
+
+Then, we use the [[bin]] section to specify each binary target. For the study examples, we provide a unique name for each example and specify the path to the corresponding .rs file.
+
+For the chat program, we define two binary targets, server and client, and specify their respective paths within the chat_program/src/bin directory.
+
+Make sure to adjust the paths and names according to your actual project structure.
+
+After updating the Cargo.toml file, save it and reopen the project in Rustover. Rustover should now recognize the targets correctly, and you should be able to build and run the desired examples or binaries using the appropriate Cargo commands.
