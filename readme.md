@@ -20,7 +20,7 @@ Here, I have compiled and studied examples from various sources, including YouTu
 
 This folder contains my solutions to coding challenges from [Codewars](https://www.codewars.com/), a platform that helps developers improve their skills through coding exercises known as "katas."
 
-### 4. `ai_rust_questions`
+### 4. `my-qustions-and-ai-answers`
 
 In my pursuit of mastering Rust, I have sought guidance from AI-powered assistants. This folder contains a collection of questions I have asked and the corresponding answers provided by the AI, serving as a valuable resource for future reference.
 
@@ -33,11 +33,13 @@ I have been diligently studying various resources, including the following books
 - "Zero to Production in Rust"
 - "Programming Rust"
 
-<img src="rust_books.jpeg" width='300'>
+<img src="github_readme_images/rust_books.jpeg" width='300'>
 
 These books have been instrumental in deepening my understanding of Rust and its ecosystem.
 
 As an attendee of the Rust Nation UK 2024 conference, I had the opportunity to network with fellow Rust enthusiasts and gained valuable insights into the Rust community. The conference was a fantastic experience, where I connected with around 30 new people on LinkedIn and engaged in conversations with over 50 attendees.
+
+<img src="github_readme_images/rust_nation_uk_seank.jpg" width='300'>
 
 ## Conclusion
 
