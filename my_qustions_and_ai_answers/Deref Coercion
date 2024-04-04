@@ -1,0 +1,69 @@
+In the code example above, m1 and m2's types are Arc<Mutex<String>>.
+
+There is line :
+
+
+Copy code
+let mut m1_guard = m1.lock().unwrap();
+lock() method comes from Mutex but m1's outer type is Arc. How come it shows inner type's method without reflection or .map method to Arc?
+
+Great question! In Rust, the Arc<T> type implements the Deref trait, which allows it to automatically dereference to the inner type T when a method or field of T is accessed.
+
+In the case of Arc<Mutex<String>>, when you call m1.lock(), Rust's deref coercion mechanism comes into play. Here's how it works:
+
+Rust sees that you are calling the lock() method on m1, which is of type Arc<Mutex<String>>.
+Rust checks if Arc<Mutex<String>> implements the lock() method directly. In this case, it doesn't.
+Rust then checks if Arc<Mutex<String>> implements the Deref trait, which allows automatic dereferencing. It does implement Deref, and the associated type Target is Mutex<String>.
+Rust automatically dereferences Arc<Mutex<String>> to Mutex<String> and looks for the lock() method on Mutex<String>.
+Mutex<String> implements the lock() method, so Rust calls it and returns the result, which is a MutexGuard<String>.
+So, even though m1 is of type Arc<Mutex<String>>, Rust's deref coercion automatically handles the dereferencing and allows you to directly call methods on the inner Mutex<String> type.
+
+This behavior is made possible by the Deref trait and Rust's automatic deref coercion, which helps make the code more concise and readable. You don't need to explicitly use reflection or a .map() method to access the inner type's methods.
+
+It's worth noting that this automatic deref coercion works for method calls, field accesses, and other operations that are defined on the inner type. It makes working with wrapped types more convenient and intuitive in Rust.
+
+Copy
+
+
+S
+Elaborate on 'deref coercion'
+
+Certainly! Deref coercion is a powerful feature in Rust that allows automatic dereferencing of types that implement the Deref trait. It enables implicit conversion between a reference to a type and a reference to another type, based on the Deref implementation.
+
+In Rust, the Deref trait is defined as follows:
+
+rust
+
+
+Copy code
+pub trait Deref {
+    type Target: ?Sized;
+    fn deref(&self) -> &Self::Target;
+}
+The Deref trait has an associated type Target, which represents the type that the implementer type can be dereferenced to. The deref method takes a reference to self and returns a reference to the associated Target type.
+
+When a type implements the Deref trait, Rust's deref coercion mechanism comes into play in certain situations. Here are the key points to understand about deref coercion:
+
+Automatic Dereferencing:
+When you have a reference to a type that implements Deref, and you call a method or access a field that is not defined on the reference type itself, Rust automatically dereferences the type to its Target type and looks for the method or field there.
+This process continues recursively until a matching method or field is found or until there are no more Deref implementations to follow.
+Implicit Conversion:
+Deref coercion allows implicit conversion between a reference to a type and a reference to its Target type.
+This means that if you have a function that expects a reference to a certain type, you can pass a reference to a type that implements Deref with the expected type as its Target, and Rust will automatically perform the necessary dereferencing.
+Coercion Sites:
+Deref coercion is triggered in certain situations, known as coercion sites. These include:
+Automatic referencing and dereferencing in method calls
+Implicit coercions in function arguments
+Coercions in match expressions and if let conditions
+Coercions in let statements and assignments
+Limitations:
+Deref coercion only works for reference types (&T) and not for owned values directly.
+It does not work in reverse, meaning you cannot automatically convert from a reference to the Target type back to a reference to the original type.
+Deref coercion is particularly useful when working with smart pointers or wrapper types that implement the Deref trait. Some common examples include:
+
+Box<T>: Deref coercion allows you to use a Box<T> as if it were a &T.
+Rc<T> and Arc<T>: Deref coercion enables you to call methods or access fields of the underlying T type directly on Rc<T> or Arc<T> references.
+Custom smart pointers or wrapper types that implement Deref.
+By leveraging deref coercion, Rust provides a convenient and intuitive way to work with types that have a natural "pointer-like" behavior, making the code more concise and readable.
+
+It's important to note that deref coercion is a compile-time feature and does not incur runtime overhead. The Rust compiler handles the necessary dereferencing and conversions during the compilation process.
