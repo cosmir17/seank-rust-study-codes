@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::ops::Add;
 use std::sync::{Mutex, Arc, RwLock};
 
 // Disclaimer: The following code is not my original work. It was sourced from the
@@ -31,6 +32,10 @@ fn main() {
     mutex_guard.push_str("from the Mutex");
     drop(mutex_guard); //re-lock the mutex
 
+    let mutex2 = Mutex::new(4);
+    let mut mutex2_guard = mutex2.lock().unwrap();
+    mutex2_guard.add(5);
+    drop(mutex2_guard); //re-lock the mutex
 
     //Arc<Mutex<T>>
     //Combine this with Arc<T> to refer to a Mutex from many different places(threads)
