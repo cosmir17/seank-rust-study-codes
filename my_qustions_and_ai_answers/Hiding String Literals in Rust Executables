@@ -1,0 +1,29 @@
+
+In rust programing, string literals are stored in binary space. Which means that these string literals are visible in exe file. How do I hide string literals from exe files?
+
+In Rust, string literals are indeed stored directly in the binary executable file, making them visible and potentially exposing sensitive information like API keys, passwords, or other confidential data. However, there are several ways to obfuscate or hide string literals from the executable file:
+
+1. **Use Environment Variables**: Instead of hardcoding sensitive string literals in your code, you can store them as environment variables and retrieve them at runtime. This way, the sensitive data is not present in the binary, and you can set different values for the environment variables in different environments (development, staging, production).
+
+2. **Encrypt and Decrypt at Runtime**: You can encrypt sensitive string literals using a strong encryption algorithm and store the encrypted version in your code. At runtime, you can decrypt the encrypted string using a secret key. The secret key itself can be stored as an environment variable or retrieved from a secure source.
+
+3. **Store Strings in a Separate File**: Instead of embedding string literals in the binary, you can store them in a separate file and read them at runtime. This file can be obfuscated or encrypted for added security.
+
+4. **Use a Obfuscation Tool**: There are third-party obfuscation tools like `cargo-obfuscator` that can obfuscate your Rust code, including string literals, making it harder to reverse engineer and understand.
+
+5. **Strip Debug Information**: When compiling in release mode, use the `--strip` flag to remove debug information from the binary, including string literals used for debugging purposes.
+
+Here's an example of how to use environment variables to hide sensitive string literals:
+
+```rust
+use std::env;
+
+fn main() {
+    let api_key = env::var("API_KEY").expect("API_KEY not set");
+    // Use api_key
+}
+```
+
+In this example, the `API_KEY` environment variable needs to be set before running the program. The sensitive string literal is not present in the binary.
+
+It's important to note that while these techniques can help obfuscate or hide string literals, they do not provide complete security. Determined attackers may still be able to recover the sensitive data through various means. Therefore, it's crucial to follow best security practices, such as using secure communication channels, implementing access controls, and regularly updating your dependencies and systems.

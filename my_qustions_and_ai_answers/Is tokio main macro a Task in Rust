@@ -1,0 +1,67 @@
+S
+Rust : is #[tokio::main] also Task?
+
+Yes, in Rust, the `#[tokio::main]` attribute is used to define the entry point of a Tokio runtime and is essentially the same as creating a Tokio task.
+
+When you annotate a function with `#[tokio::main]`, Tokio automatically sets up a runtime environment and executes the function as the main task within that runtime. This is a convenient way to bootstrap a Tokio application without manually creating a runtime and spawning the initial task.
+
+Under the hood, `#[tokio::main]` does the following:
+
+1. It creates a new Tokio runtime using the default configuration.
+2. It spawns the annotated function as a task onto the runtime.
+3. It starts the runtime and blocks the main thread until all spawned tasks have completed.
+
+So, when you use `#[tokio::main]`, your function becomes the entry point of the Tokio runtime and is executed as a task within that runtime.
+
+Here's an example:
+
+```rust
+#[tokio::main]
+async fn main() {
+    // Your code here
+    println!("Hello, Tokio!");
+}
+```
+
+In this case, the `main` function is annotated with `#[tokio::main]`, which means it will be executed as a task within a Tokio runtime.
+
+It's worth noting that you can also use `#[tokio::main]` on functions other than `main`. This can be useful when you want to write integration tests or examples that require a Tokio runtime.
+
+So, to answer your question, yes, `#[tokio::main]` is essentially a way to define a task that serves as the entry point of a Tokio runtime.
+
+
+
+S
+how much overhead would using async in an embedded system with one core would be whyy is it not very popular rn?
+
+Using async programming in an embedded system with a single core can introduce some overhead and complexities, which is why it may not be as popular in the embedded domain as it is in other areas. Here are a few reasons:
+
+1. Runtime Overhead:
+   - Async programming often relies on a runtime or an executor to manage and schedule tasks. This runtime adds some overhead in terms of memory usage and execution time.
+   - In resource-constrained embedded systems, the additional memory and computational overhead introduced by the async runtime may be significant compared to the available resources.
+
+2. Context Switching:
+   - Async programming involves cooperative multitasking, where tasks voluntarily yield control to other tasks when they encounter an asynchronous operation or a blocking point.
+   - On a single-core system, context switching between tasks requires saving and restoring the state of each task, which introduces some overhead.
+   - The cost of context switching can be relatively higher in embedded systems compared to the overall processing power available.
+
+3. Complexity and Debugging:
+   - Async programming introduces additional complexity in terms of reasoning about the flow of execution and managing the lifecycle of tasks.
+   - Debugging async code can be more challenging due to the non-linear nature of execution and the potential for race conditions or deadlocks.
+   - In embedded systems, where debugging and troubleshooting can already be more difficult due to limited debugging tools and resources, the added complexity of async programming may be a concern.
+
+4. Real-time Requirements:
+   - Many embedded systems have real-time requirements, where predictable and deterministic execution is crucial.
+   - Async programming, with its cooperative multitasking and potential for task interleaving, can make it harder to guarantee strict real-time behavior and meet tight timing constraints.
+   - In such cases, a more traditional, synchronous programming model with well-defined execution patterns may be preferred.
+
+5. Ecosystem and Tooling:
+   - The ecosystem and tooling support for async programming in embedded systems may not be as mature or widely adopted compared to other domains.
+   - Embedded developers may be more familiar and comfortable with traditional programming paradigms and may have established codebases and libraries that are not designed for async programming.
+
+That being said, there are cases where async programming can be beneficial in embedded systems, particularly when dealing with I/O-bound tasks or when managing multiple peripherals concurrently. Some embedded frameworks and libraries are starting to provide async support to cater to these scenarios.
+
+However, the decision to use async programming in an embedded system should be carefully considered based on the specific requirements, constraints, and trade-offs of the project. Factors such as available resources, real-time requirements, development team expertise, and the overall complexity of the system should be taken into account.
+
+As the embedded ecosystem evolves and more efficient async runtimes and tools become available, the adoption of async programming in embedded systems may gradually increase. However, it's important to weigh the benefits against the overhead and complexities introduced by async programming in the context of each specific embedded project.
+

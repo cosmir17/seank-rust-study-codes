@@ -1,0 +1,45 @@
+S
+I have the following Rust program :
+
+
+Copy code
+fn multiply(num: &u32) -> u32 {
+    num * 3
+}
+
+fn divide(num: u32) -> u32 {
+    num / 2
+}
+
+fn main() {
+    let my_number = 4;
+    let multiplied = multiply(&my_number);
+    let second_multiply = divide(my_number);
+
+    println!("{}", my_number);
+    println!("{}", multiplied);
+    println!("{}", second_multiply);
+}
+why can my_number be displayed? I thought the ownership of my_number got moved to divide function.
+
+
+
+
+
+In the given Rust program, the ownership of `my_number` is not moved to the `divide` function. Let's go through the code step by step to understand why `my_number` can still be displayed:
+
+1. `let my_number = 4;`: Here, `my_number` is declared as a variable with an initial value of 4. It is owned by the `main` function.
+
+2. `let multiplied = multiply(&my_number);`: In this line, `&my_number` creates a reference to `my_number` and passes it to the `multiply` function. The `multiply` function accepts a reference to a `u32` value. Since it only borrows a reference to `my_number`, the ownership of `my_number` remains with the `main` function.
+
+3. `let second_multiply = divide(my_number);`: Here, `my_number` is passed directly to the `divide` function. However, `my_number` is of type `u32`, which implements the `Copy` trait. Types that implement the `Copy` trait allow their values to be duplicated when assigned or passed as arguments. In this case, a copy of `my_number` is passed to the `divide` function, and the original `my_number` remains owned by the `main` function.
+
+4. `println!("{}", my_number);`: Since the ownership of `my_number` was not moved in the previous function calls, it can still be accessed and displayed here.
+
+5. `println!("{}", multiplied);` and `println!("{}", second_multiply);`: These lines simply display the results of the `multiply` and `divide` function calls.
+
+In summary, `my_number` can be displayed because:
+- In the `multiply` function call, only a reference to `my_number` is passed, so the ownership remains with the `main` function.
+- In the `divide` function call, `my_number` is of type `u32`, which implements the `Copy` trait. This means a copy of `my_number` is passed to the function, and the original `my_number` remains owned by the `main` function.
+
+Therefore, `my_number` can still be accessed and displayed after the function calls.
