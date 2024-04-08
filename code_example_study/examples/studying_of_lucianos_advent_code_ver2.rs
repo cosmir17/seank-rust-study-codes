@@ -9,24 +9,25 @@
 // With the assistance of an AI, I studied this code to reinforce my understanding of the material from the linked
 // video presentation.
 
+// impl<'a> From<&'a str> for Instr<'a> {
+//     fn from(s: &'a str) -> Self {
+//         if s.starts_with("mask") {
+//             Instr::Mask(&s[7..])
+//         } else if s.starts_with("mem") {
+//             let mut splits = s[4..].split("] = ");
+//             let _addr = splits.next().unwrap().parse().unwrap();
+//             let _value: u64 = splits.last().unwrap().parse().unwrap();
+//             Instr::Mem(_addr, _value)
+//         } else {
+//             panic!("Invalid line found: {s}")
+//         }
+//     }
+// }
+
+#[derive(PartialEq, Debug)]
 enum Instr<'a> {
     Mask(&'a str),
     Mem(u64, u64),
-}
-
-impl<'a> From<&'a str> for Instr<'a> {
-    fn from(s: &'a str) -> Self {
-        if s.starts_with("mask") {
-            Instr::Mask(&s[7..])
-        } else if s.starts_with("mem") {
-            let mut splits = s[4..].split("] = ");
-            let _addr = splits.next().unwrap().parse().unwrap();
-            let _value: u64 = splits.last().unwrap().parse().unwrap();
-            Instr::Mem(_addr, _value)
-        } else {
-            panic!("Invalid line found: {s}")
-        }
-    }
 }
 
 use std::convert::{TryFrom, TryInto};

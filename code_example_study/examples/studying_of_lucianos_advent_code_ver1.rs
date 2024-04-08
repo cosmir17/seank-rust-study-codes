@@ -11,6 +11,7 @@
 
 use std::str::FromStr;
 
+#[derive(PartialEq, Debug)]
 enum Instr {
     Mask(String),
     Mem(u64, u64),
