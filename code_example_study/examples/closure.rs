@@ -63,3 +63,7 @@ pub fn process_file<F>(file_path: &str, processor: F)
         }
     }
 }
+
+fn main() {
+
+}

@@ -68,3 +68,7 @@ pub fn run() {
     let args = parse_args();
     read_and_write(&args);
 }
+
+fn main() {
+
+}
