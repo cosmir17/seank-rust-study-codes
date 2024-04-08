@@ -28,6 +28,10 @@ In my pursuit of mastering Rust, I have sought guidance from AI-powered assistan
 
 This module delves into the world of Test-Driven Development (TDD) in Rust, showcasing various examples of writing unit tests, utilizing assertions, and mocking dependencies with the help of the `mockall` crate.
 
+### 6. `rust_tdd_example_study_2`
+
+This module is replicated from the blog post ["Rust Unit and Integration Testing in RustRover"](https://blog.jetbrains.com/rust/2024/04/02/rust-unit-and-integration-testing-in-rustrover) and demonstrates a structured approach to unit and integration testing in Rust.
+
 ## Learning and Rust Nation UK 2024
 
 I have been diligently studying various resources, including the following books:
