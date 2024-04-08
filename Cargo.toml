@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = ["chat_program_study", "code_example_study", "codewars_kata_training", "rust_tdd_example_study"]
+members = ["chat_program_study", "code_example_study", "codewars_kata_training", "rust_tdd_example_study_1"]
 
 [dependencies]

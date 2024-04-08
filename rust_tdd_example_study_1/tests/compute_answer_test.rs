@@ -1,4 +1,4 @@
-use rust_tdd_example_study::compute_answer_to_be_tested_from_tests_package;
+use rust_tdd_example_study_1::compute_answer_to_be_tested_from_tests_package;
 
 #[test]
 fn answer_should_be_42() {
@@ -17,7 +17,7 @@ fn answer_should_be_42() {
     // Right: 41
     // <Click to see difference>
     //
-    // thread 'answer_should_be_42' panicked at rust_tdd_example_study/tests/compute_answer_test.rs:6:5:
+    // thread 'answer_should_be_42' panicked at rust_tdd_example_study_1/tests/compute_answer_test.rs:6:5:
     // assertion `left == right` failed
     //   left: 42
     //  right: 41

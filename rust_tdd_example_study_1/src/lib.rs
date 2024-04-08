@@ -64,34 +64,34 @@ mod tests {
 
         //times(2) : the following error is expected, I only call once
         // MockBigComputer::compute_answer: Expectation(<anything>) called 1 time(s) which is fewer than expected 2
-        // thread 'tests::answer_should_be_42_with_mocking' panicked at rust_tdd_example_study/src/lib.rs:18:1:
+        // thread 'tests::answer_should_be_42_with_mocking' panicked at rust_tdd_example_study_1/src/lib.rs:18:1:
         // MockBigComputer::compute_answer: Expectation(<anything>) called 1 time(s) which is fewer than expected 2
         // stack backtrace:
         //    0: rust_begin_unwind
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/std/src/panicking.rs:647:5
         //    1: core::panicking::panic_fmt
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/panicking.rs:72:14
-        //    2: <rust_tdd_example_study::__mock_MockBigComputer_BigComputer::__compute_answer::Common as core::ops::drop::Drop>::drop
+        //    2: <rust_tdd_example_study_1::__mock_MockBigComputer_BigComputer::__compute_answer::Common as core::ops::drop::Drop>::drop
         //              at ./src/lib.rs:18:1
-        //    3: core::ptr::drop_in_place<rust_tdd_example_study::__mock_MockBigComputer_BigComputer::__compute_answer::Common>
+        //    3: core::ptr::drop_in_place<rust_tdd_example_study_1::__mock_MockBigComputer_BigComputer::__compute_answer::Common>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
-        //    4: core::ptr::drop_in_place<rust_tdd_example_study::__mock_MockBigComputer_BigComputer::__compute_answer::Expectation>
+        //    4: core::ptr::drop_in_place<rust_tdd_example_study_1::__mock_MockBigComputer_BigComputer::__compute_answer::Expectation>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
-        //    5: core::ptr::drop_in_place<[rust_tdd_example_study::__mock_MockBigComputer_BigComputer::__compute_answer::Expectation]>
+        //    5: core::ptr::drop_in_place<[rust_tdd_example_study_1::__mock_MockBigComputer_BigComputer::__compute_answer::Expectation]>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
         //    6: <alloc::vec::Vec<T,A> as core::ops::drop::Drop>::drop
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/alloc/src/vec/mod.rs:3147:13
-        //    7: core::ptr::drop_in_place<alloc::vec::Vec<rust_tdd_example_study::__mock_MockBigComputer_BigComputer::__compute_answer::Expectation>>
+        //    7: core::ptr::drop_in_place<alloc::vec::Vec<rust_tdd_example_study_1::__mock_MockBigComputer_BigComputer::__compute_answer::Expectation>>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
-        //    8: core::ptr::drop_in_place<rust_tdd_example_study::__mock_MockBigComputer_BigComputer::__compute_answer::Expectations>
+        //    8: core::ptr::drop_in_place<rust_tdd_example_study_1::__mock_MockBigComputer_BigComputer::__compute_answer::Expectations>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
-        //    9: core::ptr::drop_in_place<rust_tdd_example_study::MockBigComputer_BigComputer>
+        //    9: core::ptr::drop_in_place<rust_tdd_example_study_1::MockBigComputer_BigComputer>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
-        //   10: core::ptr::drop_in_place<rust_tdd_example_study::MockBigComputer>
+        //   10: core::ptr::drop_in_place<rust_tdd_example_study_1::MockBigComputer>
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ptr/mod.rs:507:1
-        //   11: rust_tdd_example_study::tests::answer_should_be_42_with_mocking
+        //   11: rust_tdd_example_study_1::tests::answer_should_be_42_with_mocking
         //              at ./src/lib.rs:69:5
-        //   12: rust_tdd_example_study::tests::answer_should_be_42_with_mocking::{{closure}}
+        //   12: rust_tdd_example_study_1::tests::answer_should_be_42_with_mocking::{{closure}}
         //              at ./src/lib.rs:57:42
         //   13: core::ops::function::FnOnce::call_once
         //              at /rustc/7cf61ebde7b22796c69757901dd346d0fe70bd97/library/core/src/ops/function.rs:250:5

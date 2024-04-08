@@ -24,6 +24,10 @@ This folder contains my solutions to coding challenges from [Codewars](https://w
 
 In my pursuit of mastering Rust, I have sought guidance from AI-powered assistants. This folder contains a collection of questions I have asked and the corresponding answers provided by the AI, serving as a valuable resource for future reference.
 
+### 5. `rust_tdd_example_study_1`
+
+This module delves into the world of Test-Driven Development (TDD) in Rust, showcasing various examples of writing unit tests, utilizing assertions, and mocking dependencies with the help of the `mockall` crate.
+
 ## Learning and Rust Nation UK 2024
 
 I have been diligently studying various resources, including the following books:
