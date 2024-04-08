@@ -19,7 +19,7 @@ use std::rc::Rc;
 
 #[derive(Debug)]
 struct Truck {
-    capacity: i32
+    capacity: i32 //how much that truck can hold
 }
 
 fn main() {
