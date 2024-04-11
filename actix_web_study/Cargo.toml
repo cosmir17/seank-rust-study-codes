@@ -1,0 +1,15 @@
+[package]
+name = "actix_web_study"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1.10.3"
+text-colorizer = "1.0.0"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "full"] }
+actix-web = "4"
+futures = "0.3.30"
+anyhow = "1.0.40"
+async-std = { version = "1", features = ["unstable"]}
+serde = {version = "1", features=["rc", "derive"]}
+serde_json = "1"
