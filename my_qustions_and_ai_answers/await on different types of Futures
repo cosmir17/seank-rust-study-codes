@@ -1,0 +1,58 @@
+Rust programming and tokio. Can you tell me how .await method work on different types of futures? Tell me also the return type
+
+Certainly! In Rust, the `.await` method is used to asynchronously wait for the completion of a future. When you use `.await` on a future, it suspends the execution of the current async function until the future completes and returns its result.
+
+The behavior of `.await` and the return type depends on the type of future being awaited. Here are a few common types of futures and how `.await` works with them:
+
+1. `Future<Output = T>`:
+   - When you `.await` a `Future<Output = T>`, it waits for the future to complete and returns the value of type `T`.
+   - The return type of `.await` on a `Future<Output = T>` is `T`.
+   - Example:
+     ```rust
+     async fn example() -> i32 {
+         let result = some_future().await;
+         result
+     }
+     ```
+
+2. `Pin<Box<dyn Future<Output = T>>>`:
+   - This is a dynamically dispatched future that is pinned to a specific location in memory.
+   - When you `.await` a `Pin<Box<dyn Future<Output = T>>>`, it waits for the future to complete and returns the value of type `T`.
+   - The return type of `.await` on a `Pin<Box<dyn Future<Output = T>>>` is `T`.
+   - Example:
+     ```rust
+     async fn example() -> i32 {
+         let boxed_future: Pin<Box<dyn Future<Output = i32>>> = Box::pin(some_future());
+         let result = boxed_future.await;
+         result
+     }
+     ```
+
+3. `tokio::task::JoinHandle<T>`:
+   - `JoinHandle<T>` represents a spawned task that can be awaited.
+   - When you `.await` a `JoinHandle<T>`, it waits for the spawned task to complete and returns the value of type `T` that was returned by the task's async block.
+   - The return type of `.await` on a `JoinHandle<T>` is `Result<T, JoinError>`, where `JoinError` is returned if the task encountered an error during execution.
+   - Example:
+     ```rust
+     async fn example() -> Result<i32, JoinError> {
+         let handle = tokio::spawn(async { 42 });
+         let result = handle.await?;
+         Ok(result)
+     }
+     ```
+
+4. `tokio::sync::oneshot::Receiver<T>`:
+   - `Receiver<T>` represents the receiving end of a oneshot channel.
+   - When you `.await` a `Receiver<T>`, it waits for a value to be sent through the channel and returns the received value of type `T`.
+   - The return type of `.await` on a `Receiver<T>` is `Result<T, Canceled>`, where `Canceled` is returned if the sending end of the channel is dropped without sending a value.
+   - Example:
+     ```rust
+     async fn example(rx: oneshot::Receiver<i32>) -> Result<i32, Canceled> {
+         let result = rx.await?;
+         Ok(result)
+     }
+     ```
+
+These are just a few examples of how `.await` works with different types of futures in Rust and tokio. The behavior and return type of `.await` depend on the specific future type being awaited.
+
+It's important to note that `.await` can only be used within an async context, such as an async function, async block, or async closure. Additionally, the future being awaited must implement the `Future` trait.

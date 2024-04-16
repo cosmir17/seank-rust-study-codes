@@ -249,3 +249,212 @@ fn main() {
 //    - The `try_from` method performs the conversion and returns a `Result<T, Error>`, which is then returned by `try_into()`.
 //
 // By implementing the `TryFrom` trait for a type, you enable the use of the `try_into()` method for converting values of other types into the implementing type. This provides a convenient and idiomatic way to perform type conversions that may fail, using the `Result` type to handle success or failure.
+
+
+
+
+// S
+//
+// I have the following Rust code.
+//
+// """
+//
+// use std::str::FromStr; enum Instr { Mask(String), Mem(u64, u64), } impl FromStr for Instr { //implementing FromStr trait, will make the parse() method available type Err = String; fn from_str(s: &str) -> Result<Self, Self::Err> { if s.starts_with("mask") { Ok(Instr::Mask(s[7..].to_string())) } else if s.starts_with("mem") { let addr_value = &mut s[4..].split("] = "); let addr: u64 = addr_value.next().unwrap().parse().unwrap(); let value: u64 = addr_value.next().unwrap().parse().unwrap(); Ok(Instr::Mem(addr, value)) } else { Err(format!("Invalid line found: {s}")) } } } fn main() { //problem : //y2020 - Day 14: Docking Data // mask = 000000000000000000000000000000X1001X // mem[42] = 100 // mask = 00000000000000000000000000000000X0XX // mem[26] = 1 // ... let mask: Instr = "mask = 000000000000000X1001X".parse().unwrap(); assert_eq!(mask, Instr::Mask("000000000000000X1001X".to_string())); let mem: Instr = "mem[42] = 100".parse().unwrap(); assert_eq!(mem, Instr::Mem(42, 100)); }
+//
+// """
+//
+// It fails with the following error message :
+//
+// """
+//
+// error[E0369]: binary operation == cannot be applied to type Instr
+//
+// --> code_example_study/examples/studying_of_lucianos_advent_code_ver1.rs:45:5
+//
+// |
+//
+// 45 | assert_eq!(mask, Instr::Mask("000000000000000X1001X".to_string()));
+//
+// | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//
+// | |
+//
+// | Instr
+//
+// | Instr
+//
+// |
+//
+// note: an implementation of PartialEq might be missing for Instr
+//
+// --> code_example_study/examples/studying_of_lucianos_advent_code_ver1.rs:14:1
+//
+// |
+//
+// 14 | enum Instr {
+//
+// | ^^^^^^^^^^ must implement PartialEq
+//
+// = note: this error originates in the macro assert_eq (in Nightly builds, run with -Z macro-backtrace for more info)
+//
+// help: consider annotating Instr with #[derive(PartialEq)]
+//
+// |
+//
+// 14 + #[derive(PartialEq)]
+//
+// 15 | enum Instr {
+//
+// |
+//
+// error[E0277]: Instr doesn't implement Debug
+//
+// --> code_example_study/examples/studying_of_lucianos_advent_code_ver1.rs:45:5
+//
+// |
+//
+// 45 | assert_eq!(mask, Instr::Mask("000000000000000X1001X".to_string()));
+//
+// | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Instr cannot be formatted using {:?}
+//
+// |
+//
+// = help: the trait Debug is not implemented for Instr
+//
+// = note: add #[derive(Debug)] to Instr or manually impl Debug for Instr
+//
+// = note: this error originates in the macro assert_eq (in Nightly builds, run with -Z macro-backtrace for more info)
+//
+// help: consider annotating Instr with #[derive(Debug)]
+//
+// |
+//
+// 14 + #[derive(Debug)]
+//
+// 15 | enum Instr {
+//
+// |
+//
+// error[E0369]: binary operation == cannot be applied to type Instr
+//
+// --> code_example_study/examples/studying_of_lucianos_advent_code_ver1.rs:48:5
+//
+// |
+//
+// 48 | assert_eq!(mem, Instr::Mem(42, 100));
+//
+// | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//
+// | |
+//
+// | Instr
+//
+// | Instr
+//
+// |
+//
+// note: an implementation of PartialEq might be missing for Instr
+//
+// --> code_example_study/examples/studying_of_lucianos_advent_code_ver1.rs:14:1
+//
+// |
+//
+// 14 | enum Instr {
+//
+// | ^^^^^^^^^^ must implement PartialEq
+//
+// = note: this error originates in the macro assert_eq (in Nightly builds, run with -Z macro-backtrace for more info)
+//
+// help: consider annotating Instr with #[derive(PartialEq)]
+//
+// |
+//
+// 14 + #[derive(PartialEq)]
+//
+// 15 | enum Instr {
+//
+// |
+//
+// error[E0277]: Instr doesn't implement Debug
+//
+// --> code_example_study/examples/studying_of_lucianos_advent_code_ver1.rs:48:5
+//
+// |
+//
+// 48 | assert_eq!(mem, Instr::Mem(42, 100));
+//
+// | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Instr cannot be formatted using {:?}
+//
+// |
+//
+// = help: the trait Debug is not implemented for Instr
+//
+// = note: add #[derive(Debug)] to Instr or manually impl Debug for Instr
+//
+// = note: this error originates in the macro assert_eq (in Nightly builds, run with -Z macro-backtrace for more info)
+//
+// help: consider annotating Instr with #[derive(Debug)]
+//
+// |
+//
+// 14 + #[derive(Debug)]
+//
+// 15 | enum Instr {
+//
+// |
+//
+// """
+//
+// What would be your suggestions?
+
+// The error messages suggest that the `Instr` enum is missing implementations for the `PartialEq` and `Debug` traits, which are required for using `assert_eq!` and printing the enum values with `{:?}` respectively.
+//
+// To fix this, you can derive the `PartialEq` and `Debug` traits for the `Instr` enum by adding the `#[derive(PartialEq, Debug)]` attribute above the enum definition. Here's the updated code:
+//
+// ```rust
+// use std::str::FromStr;
+//
+// #[derive(PartialEq, Debug)]
+// enum Instr {
+//     Mask(String),
+//     Mem(u64, u64),
+// }
+//
+// impl FromStr for Instr {
+//     // implementing FromStr trait, will make the parse() method available
+//     type Err = String;
+//
+//     fn from_str(s: &str) -> Result<Self, Self::Err> {
+//         if s.starts_with("mask") {
+//             Ok(Instr::Mask(s[7..].to_string()))
+//         } else if s.starts_with("mem") {
+//             let addr_value = &mut s[4..].split("] = ");
+//             let addr: u64 = addr_value.next().unwrap().parse().unwrap();
+//             let value: u64 = addr_value.next().unwrap().parse().unwrap();
+//             Ok(Instr::Mem(addr, value))
+//         } else {
+//             Err(format!("Invalid line found: {s}"))
+//         }
+//     }
+// }
+//
+// fn main() {
+//     // problem:
+//     // y2020 - Day 14: Docking Data
+//     // mask = 000000000000000000000000000000X1001X
+//     // mem[42] = 100
+//     // mask = 00000000000000000000000000000000X0XX
+//     // mem[26] = 1
+//     // ...
+//
+//     let mask: Instr = "mask = 000000000000000X1001X".parse().unwrap();
+//     assert_eq!(mask, Instr::Mask("000000000000000X1001X".to_string()));
+//
+//     let mem: Instr = "mem[42] = 100".parse().unwrap();
+//     assert_eq!(mem, Instr::Mem(42, 100));
+// }
+// ```
+//
+// By adding `#[derive(PartialEq, Debug)]` above the `Instr` enum definition, the Rust compiler will automatically generate the necessary implementations for the `PartialEq` and `Debug` traits.
+//
+// With these changes, the code should compile without any errors, and the `assert_eq!` statements should pass successfully.

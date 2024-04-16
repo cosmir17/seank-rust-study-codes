@@ -1,0 +1,19 @@
+The concepts of `free()` and `malloc()` from C are related to manual memory management, where the programmer is responsible for allocating and deallocating memory. However, Rust takes a different approach to memory management.
+
+In Rust, memory management is handled through ownership, borrowing, and lifetimes. Rust enforces strict rules at compile-time to ensure memory safety and prevent common issues like null or dangling pointer dereferences, buffer overflows, and memory leaks.
+
+Here are some key differences and concepts in Rust:
+
+1. Ownership: In Rust, every value has an owner, and there can only be one owner at a time. When the owner goes out of scope, the value is automatically deallocated. This eliminates the need for manual memory management using functions like `malloc()` and `free()`.
+
+2. Borrowing: Rust allows borrowing of values through references. You can have multiple immutable references or a single mutable reference to a value at a time. This helps prevent data races and ensures safe concurrent access to data.
+
+3. Lifetimes: Rust uses lifetimes to ensure that references are valid and do not outlive the data they refer to. The compiler tracks the lifetimes of references and ensures that they are used correctly, preventing issues like dangling references.
+
+4. Smart Pointers: Rust provides smart pointers, such as `Box<T>`, `Rc<T>`, and `Arc<T>`, which are used for heap allocation and automatic memory management. These smart pointers handle the allocation and deallocation of memory safely and efficiently.
+
+5. RAII (Resource Acquisition Is Initialization): Rust follows the RAII principle, where resources (such as memory) are acquired during the initialization of an object and automatically released when the object goes out of scope. This helps in writing safe and leak-free code.
+
+While the concepts of `free()` and `malloc()` are not directly applicable in Rust, understanding memory management and how Rust ensures memory safety through ownership, borrowing, and lifetimes is crucial for effective Rust programming.
+
+Rust's approach to memory management aims to provide the benefits of manual memory management, such as fine-grained control and performance, while also ensuring memory safety and preventing common programming errors at compile-time.

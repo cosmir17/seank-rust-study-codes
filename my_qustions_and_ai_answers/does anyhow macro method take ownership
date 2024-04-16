@@ -1,0 +1,77 @@
+Rust code :
+
+I have the following code
+
+pub async fn save_response(
+    mut transaction: Transaction<'static, Postgres>,
+    idempotency_key: &IdempotencyKey,
+    user_id: Uuid,
+    http_response: HttpResponse,
+) -> Result<HttpResponse, anyhow::Error> {
+    let (response_head, body) = http_response.into_parts();
+    let body = to_bytes(body).await.map_err(|e| anyhow::anyhow!("{}", e))?;
+    let status_code = response_head.status().as_u16() as i16;
+    let headers = {
+        let mut h = Vec::with_capacity(response_head.headers().len());
+        for (name, value) in response_head.headers().iter() {
+            let name = name.as_str().to_owned();
+            let value = value.as_bytes().to_owned();
+            h.push(HeaderPairRecord { name, value });
+        }
+        h
+    };
+    transaction
+        .execute(sqlx::query_unchecked!(
+            r#"
+        UPDATE idempotency
+        SET
+            response_status_code = $3,
+            response_headers = $4,
+            response_body = $5
+        WHERE
+            user_id = $1 AND
+            idempotency_key = $2
+        "#,
+            user_id,
+            idempotency_key.as_ref(),
+            status_code,
+            headers,
+            body.as_ref()
+        ))
+        .await?;
+    transaction.commit().await?;
+
+    let http_response = response_head.set_body(body).map_into_boxed_body();
+    Ok(http_response)
+}
+
+In '.map_err(|e| anyhow::anyhow!("{}", e))?;', does anyhow! method takes ownership of 'e'?
+
+In the line .map_err(|e| anyhow::anyhow!("{}", e))?;, the anyhow! macro does not take ownership of e. Instead, it borrows e and uses it to create a new anyhow::Error instance.
+
+The anyhow! macro is defined to accept format strings and arguments, similar to println! or format!. When you use "{}" as the format string and pass e as an argument, the anyhow! macro internally uses the Display trait of e to convert it into a string representation. This conversion happens by borrowing e, not by taking ownership of it.
+
+So, in this case, e is borrowed by the anyhow! macro to create a new anyhow::Error instance, which is then returned as the error value of the map_err operation.
+
+It's important to note that the map_err closure itself takes ownership of the error value e received from the previous operation. However, this ownership is moved into the anyhow! macro call, and the resulting anyhow::Error instance is returned from the closure and propagated using the ? operator.
+S
+
+whatever happens in map_err closure, it doesn't take ownership of 'e', it's automatically borrowed? even without & sign?
+
+In the closure passed to map_err, the parameter e is indeed automatically borrowed, even without an explicit & sign. This is because the closure takes ownership of the error value e received from the previous operation.
+
+When you use |e| as the closure parameter, it means that the closure takes ownership of the error value. However, within the closure body, you can choose to either move or borrow e as needed.
+
+In the case of |e| anyhow::anyhow!("{}", e), the anyhow! macro does not take ownership of e. Instead, it borrows e to format the error message. The ownership of e remains within the closure itself.
+
+If you want to explicitly show that e is being borrowed within the closure, you can add the & sign to the closure parameter:
+
+rust
+
+.map_err(|&e| anyhow::anyhow!("{}", e))?;
+
+However, this is not necessary because the anyhow! macro automatically borrows e as needed.
+
+It's worth noting that the closure takes ownership of the error value e, but it does not take ownership of any variables from the outer scope. The closure only captures variables from the outer scope by reference or by moving, depending on how they are used within the closure body.
+
+In summary, the map_err closure takes ownership of the error value e, but the anyhow! macro within the closure borrows e automatically to format the error message, without taking ownership of it.

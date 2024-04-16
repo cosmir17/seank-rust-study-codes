@@ -1,0 +1,36 @@
+I have the following Rust code :
+
+#[tokio::test]
+async fn subscribe_fails_if_there_is_a_fatal_database_error() {
+    // Arrange
+    let app = spawn_app().await;
+    let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
+    // Sabotage the database
+    sqlx::query!("ALTER TABLE subscriptions DROP COLUMN email;",)
+        .execute(&app.db_pool)
+        .await
+        .unwrap();
+
+    // Act
+    let response = app.post_subscriptions(body.into()).await;
+
+    // Assert
+    assert_eq!(response.status().as_u16(), 500);
+}
+
+I have a questions.
+
+    '.execute(&app.db_pool)', does & apply to app or db_pool?
+
+In the line .execute(&app.db_pool), the & applies to app.db_pool, not to app.
+
+In Rust, & is used to create a reference to a value. In this case, app.db_pool is being passed as a reference to the execute method.
+
+The reason for using & here is likely because the execute method expects a reference to a database connection pool (&Pool). By passing &app.db_pool, you are providing a reference to the db_pool field of the app instance.
+
+So, to clarify:
+
+    app.db_pool accesses the db_pool field of the app instance.
+    &app.db_pool creates a reference to the db_pool field, allowing it to be passed as an argument to the execute method.
+
+The & is not applied to app itself in this case.

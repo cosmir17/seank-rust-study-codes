@@ -1,0 +1,182 @@
+S
+
+I have the following example :
+
+trait Vehicle {
+    fn drive(&self);
+}
+
+struct Truck;
+
+impl Vehicle for Truck {
+    fn drive(&self) {
+        println!("Truck is driving")
+    }
+}
+
+fn main() {
+    // let t: dyn Vehicle;
+    // let a = Truck;
+    // t = a;
+
+    // let t: dyn Vehicle;
+    // t = Truck;
+    //this doesn't work because something to store
+    // on the stack the rust compiler needs to know the size of the memory at compilation time
+    // in this case, anything can implement Vehicle and each of the implementation of Vehicle
+    // could be a different size so the compiler has no way to knowing or computing the exact
+    // size needed in the stack for that memory
+
+    //the only solution here is to store in the heap, which unfortunately has a much slower access time
+    //so you wouldn't want to actually store things on the heap if you don't need to
+
+    //but in this case, we do need to and the way we do that is by using Box<dyn Vehicle>
+    //then we do
+    let t: Box<dyn Vehicle>;
+    t = Box::new(Truck);
+    t.drive();
+
+    //the other use case for box is a recursive types.
+    //what if we want to be able to represent a list of Trucks so we have like a line of trucks waiting
+    // in at a stoplight or something
+    // we can add field in the Truck struct,
+}
+
+what's the difference between the above and the following? :
+
+let t: &dyn Vehicle;
+t = &Truck;
+t.drive();
+
+
+
+
+The primary difference between the two approaches lies in the way they handle memory allocation and ownership.
+
+In the first case:
+
+```rust
+let t: Box<dyn Vehicle>;
+t = Box::new(Truck);
+t.drive();
+```
+
+The `Box<dyn Vehicle>` is used to allocate memory on the heap dynamically. The `Box` is a smart pointer that owns the data on the heap. This approach allows for dynamic dispatch, where the specific implementation of the `Vehicle` trait is determined at runtime. However, it comes with the overhead of heap allocation and deallocation, which can be slower than stack-based allocation.
+
+In the second case:
+
+```rust
+let t: &dyn Vehicle;
+t = &Truck;
+t.drive();
+```
+
+The `&dyn Vehicle` is a reference to a trait object, which is stored on the stack. This approach is more efficient than heap allocation because it avoids the overhead of heap allocation and deallocation. However, it also has some restrictions:
+
+1. **Lifetime Constraint**: The reference `&dyn Vehicle` must have a lifetime that is tied to the lifetime of the object it references. In this case, `t` can only exist as long as the `Truck` instance exists.
+
+2. **No Ownership Transfer**: Since `t` is a reference, it cannot take ownership of the `Truck` instance. This means that you cannot move the `Truck` instance to another scope or return it from a function.
+
+3. **No Mutation**: References to trait objects are immutable by default. If you need to mutate the object behind the trait object, you would need to use `&mut dyn Vehicle`.
+
+The choice between `Box<dyn Vehicle>` and `&dyn Vehicle` depends on your specific use case and requirements. If you need to transfer ownership of the object or store it in a data structure that requires ownership, you should use `Box<dyn Vehicle>`. If you only need a temporary reference to the object and don't need to transfer ownership, `&dyn Vehicle` can be more efficient.
+
+In the example you provided, the commented-out lines that try to use `dyn Vehicle` directly (`let t: dyn Vehicle;` and `t = Truck;`) are not allowed because trait objects must be behind a pointer (either a `Box` or a reference `&`). This is due to the way Rust handles dynamic dispatch and the fact that the size of a trait object is not known at compile-time.
+
+
+
+
+S
+
+give me code examples when "let t: Box<dyn Vehicle>; t = Box::new(Truck); t.drive();" can be more useful than the alternative.
+
+
+Sure, here are a few examples where using `Box<dyn Vehicle>` can be more useful than using a reference `&dyn Vehicle`:
+
+1. **Storing trait objects in a data structure**:
+Suppose you want to store different types of vehicles in a vector or another data structure. Since these vehicles implement the `Vehicle` trait, you can store them as `Box<dyn Vehicle>`:
+
+```rust
+struct Truck;
+struct Car;
+
+impl Vehicle for Truck {
+    fn drive(&self) {
+        println!("Truck is driving");
+    }
+}
+
+impl Vehicle for Car {
+    fn drive(&self) {
+        println!("Car is driving");
+    }
+}
+
+fn main() {
+    let mut vehicles: Vec<Box<dyn Vehicle>> = Vec::new();
+    vehicles.push(Box::new(Truck));
+    vehicles.push(Box::new(Car));
+
+    for vehicle in vehicles {
+        vehicle.drive();
+    }
+}
+```
+
+In this example, you can't use `&dyn Vehicle` because the vector would expect to own the elements, not just borrow them.
+
+2. **Returning trait objects from functions**:
+If you want to return a trait object from a function, you'll need to use `Box<dyn Vehicle>` or another owned type:
+
+```rust
+fn get_vehicle() -> Box<dyn Vehicle> {
+    Box::new(Truck)
+}
+
+fn main() {
+    let vehicle = get_vehicle();
+    vehicle.drive();
+}
+```
+
+Here, you can't use `&dyn Vehicle` because the reference would be pointing to a temporary value that gets dropped at the end of the `get_vehicle` function.
+
+3. **Recursive data structures**:
+As mentioned in the original example, `Box<dyn Vehicle>` can be useful for creating recursive data structures, like a linked list:
+
+```rust
+struct Node {
+    value: Box<dyn Vehicle>,
+    next: Option<Box<Node>>,
+}
+```
+
+In this case, you need to use `Box<dyn Vehicle>` to store the trait object, and `Option<Box<Node>>` to handle the recursive structure.
+
+4. **Dynamic dispatch with mutability**:
+If you need to mutate the trait object, you'll need to use `Box<dyn Vehicle>` because `&dyn Vehicle` is immutable by default:
+
+```rust
+struct Truck {
+    speed: u32,
+}
+
+impl Vehicle for Truck {
+    fn drive(&mut self) {
+        self.speed += 10;
+        println!("Truck is driving at {} km/h", self.speed);
+    }
+}
+
+fn main() {
+    let mut truck = Box::new(Truck { speed: 0 });
+    truck.drive();
+    truck.drive();
+}
+```
+
+In this example, you need to use `Box<dyn Vehicle>` to get a mutable reference to the trait object and call the `drive` method mutably.
+
+In general, `Box<dyn Vehicle>` is more flexible but also has more overhead due to heap allocation. If you don't need the flexibility it provides, using `&dyn Vehicle` can be more efficient for temporary references.
+
+
