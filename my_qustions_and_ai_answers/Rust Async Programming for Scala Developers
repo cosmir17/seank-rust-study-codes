@@ -551,7 +551,274 @@ The specific runtime you choose, such as Tokio or `async-std`, provides the nece
 
 
 
+MIR code transformation :
+
+#![allow(dead_code, unused_variables)]
+
+use tokio::time::{sleep, Duration};
+
+async fn foo1() -> usize {
+    let a = Duration::from_secs(10);
+    sleep(a).await;
+    0
+}
+
+
+=>
+
+ Compiling playground v0.0.1 (/playground)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.03s
+Standard Output
+Result
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+fn foo1() -> {async fn body of foo1()} {
+    let mut _0: {async fn body of foo1()};
+
+    bb0: {
+        _0 = {coroutine@src/lib.rs:5:26: 9:2 (#0)};
+        return;
+    }
+}
+
+fn foo1::{closure#0}(_1: Pin<&mut {async fn body of foo1()}>, _2: &mut Context<'_>) -> Poll<usize> {
+    debug _task_context => _13;
+    let mut _0: std::task::Poll<usize>;
+    let _3: std::time::Duration;
+    let mut _4: tokio::time::Sleep;
+    let mut _5: tokio::time::Sleep;
+    let mut _6: std::task::Poll<()>;
+    let mut _7: std::pin::Pin<&mut tokio::time::Sleep>;
+    let mut _8: &mut tokio::time::Sleep;
+    let mut _9: &mut std::task::Context<'_>;
+    let mut _10: isize;
+    let mut _12: usize;
+    let mut _13: &mut std::task::Context<'_>;
+    let mut _14: u32;
+    let mut _15: &mut {async fn body of foo1()};
+    let mut _16: &mut {async fn body of foo1()};
+    let mut _17: &mut {async fn body of foo1()};
+    let mut _18: &mut {async fn body of foo1()};
+    let mut _19: &mut {async fn body of foo1()};
+    let mut _20: &mut {async fn body of foo1()};
+    let mut _21: &mut {async fn body of foo1()};
+    let mut _22: &mut {async fn body of foo1()};
+    scope 1 {
+        debug a => _3;
+        scope 2 {
+            debug __awaitee => (((*(_1.0: &mut {async fn body of foo1()})) as variant#3).0: tokio::time::Sleep);
+            let _11: ();
+            scope 3 {
+                debug result => _11;
+            }
+        }
+    }
+
+    bb0: {
+        _15 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        _14 = discriminant((*_15));
+        switchInt(move _14) -> [0: bb1, 1: bb16, 2: bb15, 3: bb14, otherwise: bb8];
+    }
+
+    bb1: {
+        _13 = move _2;
+        _3 = Duration::from_secs(const 10_u64) -> [return: bb2, unwind: bb13];
+    }
+
+    bb2: {
+        _5 = tokio::time::sleep(_3) -> [return: bb3, unwind: bb13];
+    }
+
+    bb3: {
+        _4 = <Sleep as IntoFuture>::into_future(move _5) -> [return: bb4, unwind: bb13];
+    }
+
+    bb4: {
+        _16 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        (((*_16) as variant#3).0: tokio::time::Sleep) = move _4;
+        goto -> bb5;
+    }
+
+    bb5: {
+        _17 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        _8 = &mut (((*_17) as variant#3).0: tokio::time::Sleep);
+        _7 = Pin::<&mut Sleep>::new_unchecked(_8) -> [return: bb6, unwind: bb12];
+    }
+
+    bb6: {
+        _9 = _13;
+        _6 = <Sleep as Future>::poll(move _7, _9) -> [return: bb7, unwind: bb12];
+    }
+
+    bb7: {
+        _10 = discriminant(_6);
+        switchInt(move _10) -> [0: bb10, 1: bb9, otherwise: bb8];
+    }
+
+    bb8: {
+        unreachable;
+    }
+
+    bb9: {
+        _0 = Poll::<usize>::Pending;
+        _18 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        discriminant((*_18)) = 3;
+        return;
+    }
+
+    bb10: {
+        _11 = ((_6 as Ready).0: ());
+        _19 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        drop((((*_19) as variant#3).0: tokio::time::Sleep)) -> [return: bb11, unwind: bb13];
+    }
+
+    bb11: {
+        _12 = const 0_usize;
+        _0 = Poll::<usize>::Ready(move _12);
+        _20 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        discriminant((*_20)) = 1;
+        return;
+    }
+
+    bb12 (cleanup): {
+        _21 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        drop((((*_21) as variant#3).0: tokio::time::Sleep)) -> [return: bb13, unwind terminate(cleanup)];
+    }
+
+    bb13 (cleanup): {
+        _22 = deref_copy (_1.0: &mut {async fn body of foo1()});
+        discriminant((*_22)) = 2;
+        resume;
+    }
+
+    bb14: {
+        _13 = move _2;
+        goto -> bb5;
+    }
+
+    bb15: {
+        assert(const false, "`async fn` resumed after panicking") -> [success: bb15, unwind continue];
+    }
+
+    bb16: {
+        assert(const false, "`async fn` resumed after completion") -> [success: bb16, unwind continue];
+    }
+}
+
+
+
+
+
+
+
+
+
+
+HIR code transformation :
+
+#![allow(dead_code, unused_variables)]
+
+use tokio::time::{sleep, Duration};
+
+async fn foo1() -> usize {
+    let a = Duration::from_secs(10);
+    sleep(a).await;
+    0
+}
+
+
+
+=>
+
+
+
+⣿
+MIR
+HIR
+Close
+Standard Error
+   Compiling playground v0.0.1 (/playground)
+warning: due to multiple output types requested, the explicitly specified output file name will be adapted for each output type
+
+warning: ignoring --out-dir flag due to -o flag
+
+warning: `playground` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.36s
+Standard Output
+Result
+#![allow(dead_code, unused_variables)]
+#[prelude_import]
+use std::prelude::rust_2021::*;
+#[macro_use]
+extern crate std;
+
+use ::{};
+use tokio::time::sleep;
+use tokio::time::Duration;
+
+async fn foo1()
+    ->
+        /*impl Trait*/ |mut _task_context: ResumeTy|
+    {
+            {
+                    let _t =
+                        {
+                                let a = Duration::from_secs(10);
+                                match #[lang = "into_future"](sleep(a)) {
+                                        mut __awaitee =>
+                                            loop {
+                                                    match unsafe {
+                                                                        #[lang = "poll"](#[lang = "new_unchecked"](&mut __awaitee),
+                                                                            #[lang = "get_context"](_task_context))
+                                                                    } {
+                                                            #[lang = "Ready"] {  0: result } => break result,
+                                                            #[lang = "Pending"] {} => { }
+                                                        }
+                                                    _task_context = (yield ());
+                                                },
+                                    };
+                                0
+                            };
+                    _t
+                }
+        }
+
+
+
 
 
 .await is keyword reserved by the compiler like 'for' keyword.
-.await is not a macro.
+.await is not a macro. used for MIR or HIR transformation
+
+
+https://github.com/rust-lang/rust/blob/7aa17df0f4f3fd77957ad0c74528c503f316501a/compiler/rustc_ast_lowering/src/expr.rs#L749
+
+Based on the code snippet provided, it looks like the `.await` keyword is indeed handled in the `lower_expr_await` function within the `compiler/rustc_ast_lowering/src/expr.rs` file. This function is responsible for desugaring the `<expr>.await` syntax into the appropriate lower-level constructs.
+
+The comment above the `lower_expr_await` function provides a brief explanation of how the desugaring works:
+
+```rust
+/// Desugar `<expr>.await` into:
+/// ```ignore (pseudo-rust)
+/// match ::std::future::IntoFuture::into_future(<expr>) {
+///     mut __awaitee => loop {
+///         match unsafe { ::std::future::Future::poll(
+///             <::std::pin::Pin>::new_unchecked(&mut __awaitee),
+///             ::std::future::get_context(task_context),
+///         ) } {
+///             ::std::task::Poll::Ready(result) => break result,
+///             ::std::task::Poll::Pending => {}
+///         }
+///         task_context = yield ();
+///     }
+/// }
+/// ```
+```
+
+The `.await` expression is transformed into a `match` expression that calls `IntoFuture::into_future` on the `<expr>` to convert it into a future. It then enters a loop where it repeatedly calls `Future::poll` on the future, passing in a `task_context`. If the future is ready, it breaks out of the loop with the result. If the future is not ready (pending), it yields control back to the runtime.
+
+This desugaring allows the `.await` syntax to be used in a more readable and concise manner, while still being transformed into the necessary lower-level constructs for proper execution.
+
+The `lower_expr_await` function handles this desugaring by constructing the appropriate HIR (High-level Intermediate Representation) expressions and statements based on the provided `<expr>`.
+
+So, the code snippet you provided does indeed show the specific part of the Rust compiler where the `.await` keyword is handled and desugared.
