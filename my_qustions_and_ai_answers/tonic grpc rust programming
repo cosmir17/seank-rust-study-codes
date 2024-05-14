@@ -494,3 +494,171 @@ Now, let's discuss why `Arc` is needed in this scenario:
 By using `Arc`, the `state` variable can be safely shared and accessed concurrently by multiple threads within the `CalculatorService` and `AdminService` instances. `Arc` ensures that the reference counting is managed atomically and that the `RwLock<u64>` is accessed in a thread-safe manner.
 
 Without `Arc`, it would not be possible to safely share the `state` variable across multiple threads, as `Rc` is not thread-safe and could lead to data races and undefined behavior in concurrent scenarios.
+
+
+
+
+
+Q
+You stated : ‘the state variable can be safely shared and accessed concurrently by multiple threads within the CalculatorService and AdminService instances.’
+
+1. How do I know there are a multiple threads within the CalculatorService and AdminService instances?
+2. How do you know: ‘Multiple threads may access the state variable simultaneously, either for reading or writing.’?
+
+A
+I apologize for any confusion caused by my previous explanation. Let me clarify and provide more accurate information based on the given code.
+
+1. Multiple threads within `CalculatorService` and `AdminService` instances:
+   - In the provided code, there is no explicit indication that multiple threads are being used within the `CalculatorService` and `AdminService` instances themselves.
+   - Each instance of `CalculatorService` and `AdminService` is created with its own copy of the `state` variable using `state.clone()`.
+   - The code does not show any spawning of additional threads within these instances.
+
+2. Simultaneous access to the `state` variable by multiple threads:
+   - The provided code does not explicitly demonstrate that multiple threads are accessing the `state` variable simultaneously.
+   - The `increment_counter` method in `CalculatorService` and the `get_request_count` method in `AdminService` are async functions that acquire a write lock and a read lock on the `state` variable, respectively.
+   - However, the code does not show multiple threads concurrently calling these methods.
+
+Based on the given code, it is not conclusive that multiple threads are accessing the `state` variable simultaneously within the `CalculatorService` and `AdminService` instances.
+
+However, the usage of `Arc<RwLock<u64>>` for the `State` type suggests that the code is designed to handle potential concurrent access to the `state` variable from multiple threads. The `Arc` type is used to provide thread-safe shared ownership, allowing multiple threads to hold references to the same `RwLock`.
+
+The `RwLock` type is an asynchronous reader-writer lock that allows multiple readers or a single writer to access the protected data concurrently. It ensures that multiple threads can safely read the `state` variable simultaneously, while only one thread can write to it at a time.
+
+So, while the provided code itself does not explicitly demonstrate concurrent access to the `state` variable by multiple threads, the usage of `Arc<RwLock<u64>>` indicates that the code is structured to handle such scenarios if they arise.
+
+It's important to note that the actual usage of multiple threads and concurrent access to the `state` variable would depend on how the `CalculatorService` and `AdminService` instances are utilized within the larger context of the application, which is not shown in the provided code snippets.
+
+I apologize for any confusion caused by my previous explanation, and I hope this clarifies the usage of `Arc` and the potential for concurrent access to the `state` variable based on the given code.
+
+
+
+
+Q
+I think, it's because of the following code.
+Copy codeServer::builder()
+    .add_service(tonic_web::enable(CalculatorServer::new(calc)))
+    .add_service(AdminServer::with_interceptor(admin, check_auth))
+tonic server somehow runs multiple threads inside. that's why the code used Arc type. My question is, how did the person who wrote this code know that tonic server would be running multiple threads internally?
+
+A
+You're absolutely right! The reason for using `Arc` in the code is indeed related to the fact that the Tonic server runs multiple threads internally.
+
+The person who wrote this code likely had knowledge of how the Tonic server works and its threading model. Tonic is built on top of the Tokio runtime, which is designed for asynchronous and concurrent programming.
+
+When you create a Tonic server using `Server::builder()` and add services to it, Tonic internally manages a thread pool to handle incoming requests concurrently. Each request is handled by a separate task within the thread pool, allowing multiple requests to be processed simultaneously.
+
+This means that when a request arrives at the server, Tonic assigns it to one of the available threads in the thread pool. The thread then executes the corresponding service method to handle the request. While one thread is processing a request, other threads can concurrently process other requests.
+
+In the provided code, both the `CalculatorServer` and `AdminServer` are added to the Tonic server using `add_service()`. This means that requests to these services will be handled concurrently by different threads within the Tonic server's thread pool.
+
+Since multiple threads will be accessing the shared `state` variable concurrently, it is necessary to use a thread-safe type like `Arc` to ensure proper synchronization and avoid data races. `Arc` provides atomic reference counting, allowing multiple threads to safely share ownership of the `RwLock<u64>`.
+
+The `RwLock` type is used to protect the actual `u64` value, ensuring that multiple threads can read from it concurrently (`RwLock::read()`) but only one thread can write to it at a time (`RwLock::write()`).
+
+So, the person who wrote this code likely had knowledge of Tonic's threading model and the need for thread safety when sharing data across multiple threads. They used `Arc` to ensure that the `state` variable can be safely shared and accessed by multiple threads within the Tonic server's thread pool.
+
+It's worth noting that the exact number of threads used by the Tonic server may vary depending on the specific configuration and the number of available CPU cores. However, the key point is that Tonic handles requests concurrently using multiple threads, and the use of `Arc` is necessary to ensure thread safety in such a scenario.
+
+
+
+Q
+regarding the following code ‘self.state.write().await;’, 'state' is Arc type. write() method belongs to RwLock. What is this called in Rust? Even if outer type doesn't have method, I can still use inner type method without unwrapping it.
+
+A
+In Rust, the ability to directly access and use the methods of an inner type within a composed type is known as "auto-dereferencing" or "auto-referencing."
+
+In the code `self.state.write().await`, `state` is of type `Arc<RwLock<u64>>`. Although `Arc` itself does not have a `write()` method, Rust's auto-dereferencing mechanism allows you to directly call the `write()` method of the inner `RwLock` without explicitly unwrapping the `Arc`.
+
+When you invoke a method on a composed type, Rust automatically dereferences the outer type(s) until it finds a type that has the called method. In this case, Rust sees that `Arc` does not have a `write()` method, so it automatically dereferences the `Arc` and looks for the `write()` method on the inner `RwLock`.
+
+This auto-dereferencing behavior is made possible by Rust's implementation of the `Deref` trait. The `Deref` trait allows a type to be treated as a reference to another type. In the case of `Arc<T>`, it implements `Deref<Target = T>`, which means that `Arc<T>` can be dereferenced to `&T`.
+
+So, when you call `self.state.write().await`, Rust automatically dereferences `self.state` from `Arc<RwLock<u64>>` to `&RwLock<u64>`, and then calls the `write()` method on the `RwLock<u64>`.
+
+This auto-dereferencing behavior is convenient because it allows you to use the methods of the inner type directly, without the need for explicit unwrapping or dereferencing. It makes the code more concise and readable.
+
+However, it's important to note that auto-dereferencing only works for methods and field accesses. If you need to pass the inner type as a value or store it in a variable, you would need to explicitly dereference or unwrap the outer type.
+
+For example, if you wanted to store the `RwLock<u64>` in a separate variable, you would need to use `Arc::clone(&self.state)` to create a new `Arc<RwLock<u64>>` reference, or `Arc::try_unwrap(self.state)` to attempt to unwrap the `Arc` and obtain the inner `RwLock<u64>` if there are no other references to it.
+
+Auto-dereferencing is a powerful feature in Rust that simplifies working with composed types and allows you to focus on the inner type's behavior without explicitly dealing with the outer type's wrapping.
+
+
+Q
+1. What code would be equivalent to 'self.state.write()' without 'auto-dereferencing'?
+2. When you said auto-dereferencing, does it mean '*' used implicitly?
+
+A
+1. Without auto-dereferencing, you would need to explicitly dereference the `Arc` to access the inner `RwLock`. Here's what the equivalent code would look like:
+
+```rust
+let write_guard = Arc::clone(&self.state).write().await;
+```
+
+In this code, `Arc::clone(&self.state)` creates a new `Arc` reference to the same underlying `RwLock`. Then, `write()` is called on the cloned `Arc`, which returns a `Future` that resolves to an `RwLockWriteGuard`.
+
+So, without auto-dereferencing, you need to explicitly clone the `Arc` and then call the `write()` method on the cloned `Arc`.
+
+2. No, auto-dereferencing does not necessarily involve the implicit use of the `*` operator.
+
+Auto-dereferencing in Rust refers to the automatic dereferencing of types that implement the `Deref` trait. When you call a method or access a field on a type that implements `Deref`, Rust automatically dereferences the outer type to the inner type, allowing you to directly use the methods and fields of the inner type.
+
+In the case of `self.state.write()`, the auto-dereferencing happens implicitly. Rust sees that `Arc<RwLock<u64>>` does not have a `write()` method, so it automatically dereferences the `Arc` to `&RwLock<u64>` and then calls the `write()` method on the `RwLock`.
+
+The `*` operator, on the other hand, is used for explicit dereferencing. It allows you to manually dereference a reference or a pointer to access the underlying value. For example, if you have a reference `&T`, you can use `*` to obtain the value of type `T`.
+
+In the code you mentioned earlier, `*count += 1`, the `*` operator is used to explicitly dereference the `RwLockWriteGuard` (which is a type of smart pointer) to access and modify the underlying `u64` value.
+
+So, while auto-dereferencing and the `*` operator are related concepts in Rust, they serve different purposes:
+- Auto-dereferencing automatically dereferences types that implement `Deref` to allow direct access to the methods and fields of the inner type.
+- The `*` operator is used for explicit manual dereferencing of references and pointers to access the underlying values.
+
+Auto-dereferencing makes the code more concise and readable by hiding the explicit dereferencing steps, while the `*` operator provides manual control over dereferencing when needed.
+
+
+Q
+Hi, I have the following code:
+
+type State = std::sync::Arc<tokio::sync::RwLock<u64>>;
+...
+impl CalculatorService {
+    async fn increment_counter(&self) {
+        let mut count = self.state.write().await;
+        *count += 1;
+    }
+}
+
+
+Arc doesn't have write() method but RwLock does. Yet, state can call write() method directly. I have three questions about it.
+
+1. Is it because of auto-dereferencing?
+2. Does it mean Arc implemented Deref or RwLock?
+3. 'self.state.write().await;' what would be an equivalent code without auto-dereferencing?
+
+A (Discord answer)
+the Arc and RwLockGuard are the ones implementing Deref
+
+i think it's
+impl CalculatorService {
+    async fn increment_counter(&self) {
+        let mut count= (*(*self).state).write().await;
+        *count += 1;
+    }
+}
+
+1. yes
+2. Arc<T> impls Deref<Target = T>
+3. you'd just have a bunch more * to deref explicitly
+
+RwLock::write(Deref::deref(&(*self).state)).await
+(if you want to avoid the whole implicit method lookup thing)
+
+You might as well use AtomicU64 rather than RwLock  by the way
+
+Okay yeah that is some strange code there. An async RwLock seems like massive overkill for incrementing a counter, idk what all that is about
+
+see https://doc.rust-lang.org/stable/reference/expressions/operator-expr.html#compound-assignment-expressions
+Operator expressions - The Rust Reference
+there is no mention of autodereferencing
+
+I already knew it.. my question is why it can't
