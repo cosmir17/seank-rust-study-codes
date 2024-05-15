@@ -1,6 +1,17 @@
 I have the following tonic Rust project.
 https://github.com/dreamsofcode-io/grpcalculator-rs
 
+//grpcurl -plaintext -proto ./proto/calculator.proto \
+// > -d '{"a": 2, "b": 3}' \
+// > '[::1]:50051' calculator.Calculator.Add
+
+// {
+//   "result": "5"
+// }
+
+// grpcui -plaintext '[::1]:50051'
+// gRPC Web UI available at http://127.0.0.1:54811/
+
 main.rs :
 Copy codeuse proto::admin_server::{Admin, AdminServer};
 use proto::calculator_server::{Calculator, CalculatorServer};
