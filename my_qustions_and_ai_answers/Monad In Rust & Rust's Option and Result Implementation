@@ -391,3 +391,55 @@ Can you make it 400 characters :
 
 While the Rust developers point out Haskell's `ST` and `IO` allow side effects, Rust's `Option` and `Result`, unlike `ST` and `IO`, are not part of an effect system to control side effects. In pure FP, `Option` and `Result` should adhere to immutability and absence of side effects, being referentially transparent. The distinction is separating effect handling from types like `Option` and `Result`, which should follow purity and immutability principles in pure FP languages, enabling equational reasoning and optimizations.
 
+
+
+
+
+
+
+S
+Can you explain to me 'without side effect'?, can you give Rust examples?
+
+In programming, a side effect refers to any modification of state outside the local scope of a function or expression. Side effects can include modifying global variables, mutating arguments passed by reference, performing I/O operations, or changing the state of an object.
+
+In Rust, the ownership system and borrowing rules help prevent unintended side effects by ensuring that mutable references cannot be shared simultaneously. This means that when you have a mutable reference to a value, you can modify it without worrying about other parts of the code accidentally accessing or modifying the same value at the same time.
+
+Here's an example that demonstrates how Rust prevents unintended side effects:
+
+```rust
+fn main() {
+    let mut v = vec![1, 2, 3];
+    let v1 = &mut v;
+    let v2 = &mut v; // Error: cannot borrow `v` as mutable more than once at a time
+    v1.push(4);
+    v2.push(5);
+}
+```
+
+In this example, we're trying to create two mutable references (`v1` and `v2`) to the same vector `v`. Rust's borrowing rules prevent this, ensuring that only one mutable reference can exist at a time. This prevents potential side effects caused by multiple parts of the code modifying the same value simultaneously.
+
+Another example is the use of the `Cell` and `RefCell` types in Rust. These types allow for interior mutability, meaning you can mutate a value even when you only have a shared reference to it. However, they do so in a controlled manner:
+
+```rust
+use std::cell::RefCell;
+
+fn main() {
+    let shared_vec = RefCell::new(vec![1, 2, 3]);
+    let borrowed_vec = shared_vec.borrow_mut();
+    borrowed_vec.push(4);
+    drop(borrowed_vec); // Release the mutable borrow
+
+    let borrowed_vec2 = shared_vec.borrow(); // OK: can borrow immutably after mutable borrow is released
+    println!("Vector: {:?}", *borrowed_vec2);
+}
+```
+
+In this example, we use a `RefCell` to allow mutation of a vector through a shared reference. The `borrow_mut` method returns a mutable reference to the value inside the `RefCell`, but it panics if there are any other active borrows (mutable or immutable) to the same value. This runtime check ensures that the mutability is still controlled and prevents unintended side effects.
+
+By leveraging Rust's ownership system, borrowing rules, and types like `Cell` and `RefCell`, developers can enjoy the benefits of mutability while minimizing the risk of unintended side effects.
+
+
+
+
+
+

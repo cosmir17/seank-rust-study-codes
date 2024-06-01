@@ -1,0 +1,32 @@
+S
+rust, how to convert f32 to i32? :
+
+
+To convert an `f32` (32-bit floating-point number) to an `i32` (32-bit signed integer) in Rust, you can use the `as` keyword or the `from` and `into` methods provided by the `From` and `Into` traits, respectively. Here are a few examples:
+
+1. Using the `as` keyword:
+```rust
+let float_num: f32 = 3.14;
+let int_num: i32 = float_num as i32;
+println!("{}", int_num); // Output: 3
+```
+
+2. Using the `from` method:
+```rust
+let float_num: f32 = 3.14;
+let int_num: i32 = i32::from(float_num);
+println!("{}", int_num); // Output: 3
+```
+
+3. Using the `into` method:
+```rust
+let float_num: f32 = 3.14;
+let int_num: i32 = float_num.into();
+println!("{}", int_num); // Output: 3
+```
+
+When converting from `f32` to `i32`, the fractional part of the floating-point number will be truncated (not rounded). For example, `3.14` will be converted to `3`, and `-3.14` will be converted to `-3`.
+
+It's important to note that if the floating-point number is outside the range of the target integer type (i.e., greater than `i32::MAX` or less than `i32::MIN`), the conversion will result in undefined behavior. Therefore, it's good practice to ensure that the floating-point number is within the valid range of the target integer type before performing the conversion.
+
+

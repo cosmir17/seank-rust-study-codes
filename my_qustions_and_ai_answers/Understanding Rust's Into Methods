@@ -86,3 +86,47 @@ It's important to note that not all types follow these naming conventions, and t
 
 
 
+
+
+
+
+
+
+what are the methods like, into\_inner and into\_parts?
+
+
+In Rust, the `into_inner()` and `into_parts()` methods are commonly used in conjunction with certain types that provide access to their inner components or state.
+
+1. `into_inner()`:
+   - The `into_inner()` method is typically defined on types that wrap an inner value, such as `Mutex<T>`, `RefCell<T>`, `Arc<T>`, etc.
+   - It consumes the wrapper type and returns the inner value, transferring ownership of the inner value to the caller.
+   - This method is useful when you need to obtain ownership of the inner value and no longer need the wrapper type.
+   - For example, if you have a `Mutex<T>` and want to consume the mutex and obtain ownership of the inner value, you can call `into_inner()` on the mutex.
+
+Example:
+```rust
+use std::sync::Mutex;
+
+let mutex = Mutex::new(42);
+let value = mutex.into_inner().unwrap();
+println!("Inner value: {}", value);
+```
+
+2. `into_parts()`:
+   - The `into_parts()` method is often defined on types that are composed of multiple parts or have a complex internal state.
+   - It consumes the original type and returns the individual parts that make up the type, typically as a tuple or a struct.
+   - This method is useful when you need to deconstruct a type into its constituent parts for further processing or when you want to consume the type and extract its internal state.
+   - For example, the `std::path::PathBuf` type provides an `into_parts()` method that returns the internal `OsString` representation of the path.
+
+Example:
+```rust
+use std::path::PathBuf;
+
+let path = PathBuf::from("/usr/local/bin");
+let parts = path.into_parts();
+println!("Path: {:?}", parts);
+```
+
+It's important to note that these methods consume the original type, meaning the original value is no longer accessible after calling these methods. They are typically used when you want to take ownership of the inner value or parts and don't need the original type anymore.
+
+Not all types in Rust provide `into_inner()` or `into_parts()` methods. The availability and behavior of these methods depend on the specific type and its design goals. It's always a good idea to refer to the documentation or the type's API to check if these methods are available and understand their specific behavior for a given type.
