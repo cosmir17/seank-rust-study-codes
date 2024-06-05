@@ -1,4 +1,23 @@
 #[cfg(test)]
+mod array_diff_tests {
+    use either::Either;
+    fn array_diff<T: PartialEq>(a: Vec<T>, b: Vec<T>) -> Vec<T> {
+        a.into_iter().filter(|x| !b.contains(x)).collect()
+    }
+
+    #[test]
+    fn returns_expected() {
+        assert_eq!(array_diff(vec![1,2], vec![1]), vec![2]);
+        assert_eq!(array_diff(vec![1,2,2], vec![1]), vec![2,2]);
+        assert_eq!(array_diff(vec![1,2,2], vec![2]), vec![1]);
+        assert_eq!(array_diff(vec![1,2,2], vec![]), vec![1,2,2]);
+        assert_eq!(array_diff(vec![], vec![1,2]), vec![]);
+        assert_eq!(array_diff(vec![1,2,3], vec![1,2]), vec![3]);
+    }
+}
+
+
+#[cfg(test)]
 mod div_con_tests {
     use either::Either;
     fn div_con(arr: &[Either<i32, String>]) -> i32 {
