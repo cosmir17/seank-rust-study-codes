@@ -16,6 +16,52 @@ mod array_diff_tests {
     }
 }
 
+#[cfg(test)]
+mod string_rank_tests {
+    use either::Either;
+    fn rank(st: &str, we: Vec<i32>, n: usize) -> &str {
+        if st.is_empty() {
+            return "No participants";
+        }
+
+        let names: Vec<&str> = st.split(',').collect();
+
+        if n > names.len() {
+            return "Not enough participants";
+        }
+
+        let mut scores: Vec<(String, i32)> = names
+            .into_iter()
+            .zip(we.iter())
+            .map(|(name, &weight)| {
+                let name_score = name.chars().map(|c| c.to_ascii_uppercase() as usize - 64).sum::<usize>();
+                let sum = name_score + name.len();
+                let winning_number = sum as i32 * weight;
+                (name.to_string(), winning_number)
+            })
+            .collect();
+
+        scores.sort_by(|(name1, score1), (name2, score2)| {
+            score2.cmp(score1).then(name1.cmp(name2))
+        });
+
+        let result = scores[n - 1].0.clone();
+        Box::leak(result.into_boxed_str())
+    }
+
+    fn testing(st: &str, we: Vec<i32>, n: usize, exp: &str) -> () {
+        assert_eq!(rank(st, we, n), exp)
+    }
+
+    #[test]
+    fn basics_rank() {
+        testing("Addison,Jayden,Sofia,Michael,Andrew,Lily,Benjamin", vec![4, 2, 1, 4, 3, 1, 2], 4, "Benjamin");
+        testing("Elijah,Chloe,Elizabeth,Matthew,Natalie,Jayden", vec![1, 3, 5, 5, 3, 6], 2, "Matthew");
+        testing("Aubrey,Olivai,Abigail,Chloe,Andrew,Elizabeth", vec![3, 1, 4, 4, 3, 2], 4, "Abigail");
+        testing("Lagon,Lily", vec![1, 5], 2, "Lagon");
+    }
+}
+
 
 #[cfg(test)]
 mod div_con_tests {
