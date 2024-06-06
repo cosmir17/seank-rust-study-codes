@@ -250,3 +250,43 @@ self.x == other.x && self.y == other.y
 By implementing PartialEq for Point, you define how equality should be determined between two Point instances. Now, the contains method can use this equality comparison to check if a Point exists in the vector.
 
 In summary, the contains method requires the PartialEq bound because it needs to compare elements for equality, and the PartialEq trait provides the necessary eq method for performing equality comparisons.
+
+
+
+S
+When you stated ‘When you call iter(), it returns an iterator that borrows the elements of the collection, making it clear that the collection cannot be mutated while the iterator is in use.’, did you mean to developers? They can’t mutate? Or did you mean the compiler prevent developers from doing it?
+
+A
+You're correct, when I said "making it clear that the collection cannot be mutated while the iterator is in use", I meant that the Rust compiler enforces this rule and prevents developers from mutating the collection while an immutable iterator is active.
+
+To clarify:
+
+In Rust, when you call `iter()` on a collection, it returns an immutable iterator that borrows the elements of the collection. The key point here is that the iterator borrows the elements, which means it doesn't own them, but it has temporary read-only access.
+
+While an immutable iterator is active and borrowing elements from the collection, the Rust compiler strictly enforces the borrowing rules and prevents any code from mutating the original collection. If you attempt to modify the collection while the immutable iterator is active, the Rust compiler will raise a compile-time error.
+
+For example:
+
+```rust
+let mut v = vec![1, 2, 3];
+
+// Create an immutable iterator
+let iter = v.iter();
+
+// Attempt to mutate the vector while the iterator is active
+v.push(4); // This will cause a compile-time error
+```
+
+The compiler error message would be something like:
+
+```
+error[E0499]: cannot borrow `v` as mutable because it is also borrowed as immutable
+  --> src/main.rs:6:5
+   |
+5  |     let iter = v.iter();
+   |                 -- immutable borrow occurs here
+6  |     v.push(4); // This will cause a compile-time error
+   |     ^^^^^^^^^ mutable borrow occurs here
+```
+
+So, to reiterate, when I said "making it clear that the collection cannot be mutated while the iterator is in use", I meant that the Rust compiler enforces this rule at compile-time, preventing developers from mutating the collection while an immutable iterator is borrowing elements from it. This enforcement of borrowing rules is a key part of Rust's memory safety guarantees and helps prevent data races and other memory-related bugs.
