@@ -130,3 +130,22 @@ That being said, there have been discussions and experimental projects exploring
 While these abstractions are not part of the core language, they can be useful in certain contexts, especially when writing more functional-style code or when dealing with monadic computations like error handling or state management.
 
 Ultimately, the decision not to include Functors or Monads as built-in language features in Rust reflects the language's design goals and trade-offs, favoring low-level control and performance over providing high-level functional abstractions out of the box.
+
+
+The Map struct exists in the Rust standard library as an implementation detail for the `.map()` iterator adapter method. It serves a specific purpose in the iterator infrastructure, but it's not something that developers typically interact with directly.
+
+Here are a few reasons why the Map struct is needed:
+
+1. **Iterator Adapters**: In Rust, iterator adapters like `.map()`, `.filter()`, and `.flat_map()` are implemented by creating a new struct that wraps the original iterator and applies the desired transformation. This allows the adapter to be lazy and only perform the transformation when the iterator is actually consumed.
+
+2. **Separation of Concerns**: By separating the transformation logic (the closure passed to `.map()`) from the iteration logic, the Map struct helps maintain a clear separation of concerns. The Map struct is responsible for applying the transformation, while the underlying iterator is responsible for providing the elements.
+
+3. **Composability**: Iterator adapters in Rust are designed to be composable, meaning you can chain multiple adapters together. Having a separate struct for each adapter makes this composition possible and easier to reason about.
+
+4. **Ownership and Borrowing**: The Map struct helps manage the ownership and borrowing of the underlying iterator and the closure used for transformation. It ensures that the closure and the iterator are properly captured and owned, avoiding any potential dangling references or ownership issues.
+
+5. **Performance Optimization**: While not a primary concern, having a dedicated struct for the `.map()` adapter allows for potential optimizations in the future, such as specializing the implementation for different iterator types or applying other performance tricks specific to the mapping operation.
+
+From a user's perspective, you don't need to worry about the Map struct directly. The Rust standard library provides a clean and ergonomic interface for working with iterators, and the existence of the Map struct is an implementation detail that allows the iterator infrastructure to function correctly and efficiently.
+
+When you call `.map(closure)` on an iterator, you're creating a new iterator of type `Map<OriginalIterator, ClosureType>`, but you can treat it like any other iterator and continue chaining other adapter methods or consuming the iterator as needed.
