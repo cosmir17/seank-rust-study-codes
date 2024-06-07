@@ -16,6 +16,36 @@ mod array_diff_tests {
     }
 }
 
+
+#[cfg(test)]
+mod disemvowel_tests {
+    use either::Either;
+
+    fn better_disemvowel(s: &str) -> String {
+        s.chars()
+            .filter(|&c| !"aeiou".contains(c.to_ascii_lowercase()))
+            .collect()
+    }
+
+    fn disemvowel(s: &str) -> String {
+        s.chars().filter(|&c| !is_vowel(c)).collect()
+    }
+
+    fn is_vowel(c: char) -> bool {
+        match c.to_ascii_lowercase() {
+            'a' | 'e' | 'i' | 'o' | 'u' => true,
+            _ => false,
+        }
+    }
+
+    #[test]
+    fn example_test() {
+        assert_eq!(disemvowel("This website is for losers LOL!"), "Ths wbst s fr lsrs LL!");
+        assert_eq!(better_disemvowel("This website is for losers LOL!"), "Ths wbst s fr lsrs LL!");
+    }
+}
+
+
 #[cfg(test)]
 mod string_rank_tests {
     use either::Either;
