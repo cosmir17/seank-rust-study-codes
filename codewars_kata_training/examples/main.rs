@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod array_diff_tests {
-    use either::Either;
     fn array_diff<T: PartialEq>(a: Vec<T>, b: Vec<T>) -> Vec<T> {
         a.into_iter().filter(|x| !b.contains(x)).collect()
     }
@@ -17,8 +16,31 @@ mod array_diff_tests {
 }
 
 #[cfg(test)]
+mod find_outlier_tests {
+
+    fn find_outlier(values: &[i32]) -> i32 {
+        let (even, odd): (Vec<&i32>, Vec<&i32>) = values.iter().partition(|&x| x % 2 == 0);
+
+        if even.len() == 1 {
+            *even[0]
+        } else {
+            *odd[0]
+        }
+    }
+
+    #[test]
+    fn basic_test() {
+        let t1 = [2,6,8,-10,3];
+        let t2 = [206847684,1056521,7,17,1901,21104421,7,1,35521,1,7781];
+        let t3 = [std::i32::MAX, 0, 1];
+        assert_eq!(3, find_outlier(&t1));
+        assert_eq!(206847684, find_outlier(&t2));
+        assert_eq!(0, find_outlier(&t3));
+    }
+}
+
+#[cfg(test)]
 mod like_description_text_tests {
-    use either::Either;
     fn likes(names: &[&str]) -> String {
         match names.len() {
             0 => "no one likes this".to_string(),
@@ -47,7 +69,6 @@ mod like_description_text_tests {
 
 #[cfg(test)]
 mod disem_vowel_tests {
-    use either::Either;
 
     fn better_disem_vowel(s: &str) -> String {
         s.chars()
@@ -76,7 +97,6 @@ mod disem_vowel_tests {
 
 #[cfg(test)]
 mod string_rank_tests {
-    use either::Either;
     fn rank(st: &str, we: Vec<i32>, n: usize) -> &str {
         if st.is_empty() {
             return "No participants";
@@ -149,24 +169,21 @@ mod div_con_tests {
 }
 
 
-fn solution(word: &str, ending: &str) -> bool {
-    word.ends_with(ending)
-}
 
-fn narcissistic(num: u64) -> bool {
-    (num.to_string()
-        .chars()
-        .map(|ch| ch.to_digit(10).unwrap())
-        .map(|n| (n as u64).pow(num.to_string().len() as u32))
-        .sum::<u64>()) == num
-}
 
 fn main() {
 }
 
 #[cfg(test)]
 mod narcissistic_tests {
-    use super::*;
+
+    fn narcissistic(num: u64) -> bool {
+        (num.to_string()
+            .chars()
+            .map(|ch| ch.to_digit(10).unwrap())
+            .map(|n| (n as u64).pow(num.to_string().len() as u32))
+            .sum::<u64>()) == num
+    }
 
     fn dotest(input: u64, expected: bool) {
         let actual = narcissistic(input);
@@ -184,7 +201,10 @@ mod narcissistic_tests {
 
 #[cfg(test)]
 mod last_word_tests {
-    use super::*;
+
+    fn solution(word: &str, ending: &str) -> bool {
+        word.ends_with(ending)
+    }
 
     #[test]
     fn test() {
