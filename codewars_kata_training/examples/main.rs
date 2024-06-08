@@ -16,6 +16,27 @@ mod array_diff_tests {
 }
 
 #[cfg(test)]
+mod break_camelcase_tests {
+    fn solution(s: &str) -> String {
+        s.chars()
+            .map(|c| {
+                if c.is_uppercase() {
+                    format!(" {}", c)
+                } else {
+                    c.to_string()
+                }
+            })
+            .collect::<String>()
+    }
+
+    #[test]
+    fn test_solution() {
+        assert_eq!(solution("camelCasing"), "camel Casing");
+        assert_eq!(solution("camelCasingTest"), "camel Casing Test");
+    }
+}
+
+#[cfg(test)]
 mod find_outlier_tests {
 
     fn find_outlier(values: &[i32]) -> i32 {
