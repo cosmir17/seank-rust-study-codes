@@ -18,20 +18,20 @@ mod array_diff_tests {
 
 
 #[cfg(test)]
-mod disemvowel_tests {
+mod disem_vowel_tests {
     use either::Either;
 
-    fn better_disemvowel(s: &str) -> String {
+    fn better_disem_vowel(s: &str) -> String {
         s.chars()
-            .filter(|&c| !"aeiou".contains(c.to_ascii_lowercase()))
+            .filter(|c| !"aeiou".contains(c.to_ascii_lowercase()))
             .collect()
     }
 
-    fn disemvowel(s: &str) -> String {
-        s.chars().filter(|&c| !is_vowel(c)).collect()
+    fn disem_vowel(s: &str) -> String {
+        s.chars().filter(|c| !is_vowel(c)).collect()
     }
 
-    fn is_vowel(c: char) -> bool {
+    fn is_vowel(c: &char) -> bool {
         match c.to_ascii_lowercase() {
             'a' | 'e' | 'i' | 'o' | 'u' => true,
             _ => false,
@@ -40,8 +40,8 @@ mod disemvowel_tests {
 
     #[test]
     fn example_test() {
-        assert_eq!(disemvowel("This website is for losers LOL!"), "Ths wbst s fr lsrs LL!");
-        assert_eq!(better_disemvowel("This website is for losers LOL!"), "Ths wbst s fr lsrs LL!");
+        assert_eq!(disem_vowel("This website is for losers LOL!"), "Ths wbst s fr lsrs LL!");
+        assert_eq!(better_disem_vowel("This website is for losers LOL!"), "Ths wbst s fr lsrs LL!");
     }
 }
 
