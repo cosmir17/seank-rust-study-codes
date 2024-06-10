@@ -1,0 +1,45 @@
+No, Rust does not have a built-in `groupBy` method like some other programming languages. However, you can achieve similar functionality using the `fold` or `collect` methods in combination with a `HashMap` or `BTreeMap`.
+
+Here's an example of how you can group elements of an iterator by a key using `fold` and `HashMap`:
+
+```rust
+use std::collections::HashMap;
+
+let words = vec!["apple", "banana", "cherry", "date", "apple", "banana", "elderberry"];
+
+let grouped: HashMap<&str, Vec<&str>> = words.iter().fold(HashMap::new(), |mut acc, &word| {
+    acc.entry(word).or_default().push(word);
+    acc
+});
+
+println!("{:?}", grouped);
+```
+
+Output:
+```
+{"apple": ["apple", "apple"], "banana": ["banana", "banana"], "cherry": ["cherry"], "date": ["date"], "elderberry": ["elderberry"]}
+```
+
+In this example:
+1. We have a vector of words `words`.
+2. We use `fold` to iterate over each word in `words` and accumulate the result in a `HashMap` called `grouped`.
+3. For each word, we use `acc.entry(word).or_default()` to get a mutable reference to the entry for that word in the `HashMap`. If the entry doesn't exist, `or_default()` initializes it with an empty `Vec`.
+4. We push the current word into the corresponding `Vec` using `push(word)`.
+5. Finally, we print the `grouped` map, which contains the words grouped by their keys.
+
+Alternatively, you can use `collect` with `HashMap` and a tuple as the key:
+
+```rust
+use std::collections::HashMap;
+
+let words = vec!["apple", "banana", "cherry", "date", "apple", "banana", "elderberry"];
+
+let grouped: HashMap<&str, Vec<&str>> = words.iter().map(|&word| (word, word)).collect();
+
+println!("{:?}", grouped);
+```
+
+This approach collects the elements into a `HashMap` directly, using each word as both the key and value in a tuple.
+
+While Rust doesn't have a built-in `groupBy` method, you can achieve the same functionality using these techniques with `fold`, `collect`, and `HashMap` or `BTreeMap`.
+

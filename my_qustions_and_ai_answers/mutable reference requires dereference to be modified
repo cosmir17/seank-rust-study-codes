@@ -1,0 +1,127 @@
+let mut hashmap = HashMap::new();
+
+*hashmap.entry(c).or_insert(0) += 1; is same as
+
+let entry = hashmap.entry(c);
+let found = entry.or_insert(0)
+*found += 1
+
+that means we are modifying the value inside the hashmap directly even we are not reassigning variable to the hashmap
+
+that's what it means to deal with a method returning a mutable reference
+
+
+This line increments the value referenced by b by 1.
+The * operator is used to dereference the mutable reference b, allowing direct modification of the value.
+The += operator increments the dereferenced value by 1.
+
+
+
+
+
+
+
+
+S
+Why immutable reference can return value without dereferencing but can mutable reference do the same?
+Also, if I want to change the value of mutable reference, should I always dereference first?
+
+A
+Immutable references can be used to access the value they reference directly, without the need for explicit dereferencing. This is because the Rust compiler automatically dereferences immutable references when they are used in certain contexts, such as method calls or field accesses.
+
+For example, consider the following code:
+
+```rust
+let x = 42;
+let r = &x;
+println!("Value: {}", r);
+```
+
+In this case, `r` is an immutable reference to `x`. When `r` is used in the `println!` macro, the Rust compiler automatically dereferences `r` to access the value it references (`42`). You don't need to explicitly write `*r` to dereference the immutable reference.
+
+On the other hand, mutable references require explicit dereferencing to access or modify the value they reference. This is because mutable references have exclusive write access to the value, and dereferencing helps ensure that the programmer is intentionally modifying the value.
+
+For example:
+
+```rust
+let mut x = 42;
+let r = &mut x;
+*r += 1;
+println!("Value: {}", *r);
+```
+
+In this case, `r` is a mutable reference to `x`. To modify the value referenced by `r`, you need to explicitly dereference it using `*r`. Similarly, to access the value for printing, you also need to dereference `r` using `*r`.
+
+The explicit dereferencing requirement for mutable references serves as a visual indicator that the value is being modified, making it clear to the programmer and preventing unintended modifications.
+
+To answer your second question, yes, if you want to change the value of a mutable reference, you should always dereference it first using the `*` operator. This applies when you want to reassign the value, modify it using operators like `+=`, or pass it as a mutable reference to a function expecting a value.
+
+Here are a few more examples:
+
+```rust
+let mut x = 42;
+let r = &mut x;
+
+// Reassigning the value
+*r = 10;
+
+// Modifying the value using operators
+*r += 5;
+
+// Passing as a mutable reference to a function expecting a value
+fn increment(x: &mut i32) {
+    *x += 1;
+}
+increment(r);
+```
+
+In each case, the mutable reference `r` is dereferenced using `*` to access or modify the value it references.
+
+I hope this clarifies the difference between immutable and mutable references and the need for dereferencing mutable references when modifying the referenced value.
+
+
+
+
+
+
+
+S
+What about dereferencing an immutable reference
+
+A
+Immutable references can be dereferenced using the `*` operator, just like mutable references. However, in many cases, the Rust compiler automatically dereferences immutable references for you, making the explicit dereference operation optional.
+
+When you use an immutable reference in a context where a value is expected, such as passing it to a function or using it in an expression, the Rust compiler implicitly dereferences the reference to access the value it refers to.
+
+Here's an example:
+
+```rust
+let x = 42;
+let r = &x;
+
+// Explicitly dereferencing the immutable reference
+let value = *r;
+println!("Value: {}", value);
+
+// Implicitly dereferencing the immutable reference
+println!("Value: {}", r);
+```
+
+In the first case, `*r` explicitly dereferences the immutable reference `r` to access the value it refers to, which is then assigned to the variable `value`.
+
+In the second case, `r` is used directly in the `println!` macro without explicit dereferencing. The Rust compiler implicitly dereferences `r` to access the value it refers to.
+
+Both cases produce the same output:
+
+```
+Value: 42
+Value: 42
+```
+
+The implicit dereferencing behavior of immutable references is a convenience provided by the Rust compiler to make the code more concise and readable. It allows you to use immutable references as if they were the values they refer to, without the need for explicit dereferencing.
+
+However, it's important to note that this implicit dereferencing behavior only applies in certain contexts where a value is expected. If you need to explicitly dereference an immutable reference for any reason, you can still use the `*` operator, like `*r`, to access the value it refers to.
+
+In summary, while immutable references can be dereferenced using the `*` operator, the Rust compiler often performs implicit dereferencing for you in contexts where a value is expected, making the code more concise and readable.
+
+

@@ -1,0 +1,16 @@
+S
+what do you call 'quotient' without floating point
+
+A
+When we talk about the "quotient" without using floating-point numbers or fractions, it is typically referred to as the "integer quotient" or "floor quotient."
+
+The integer quotient is the result of integer division, where the fractional part (if any) is discarded, and only the whole number portion of the quotient is retained. In other words, it is the largest integer that is less than or equal to the exact quotient.
+
+For example:
+- 17 divided by 5 has an integer quotient of 3 (17 ÷ 5 = 3 remainder 2)
+- 24 divided by 4 has an integer quotient of 6 (24 ÷ 4 = 6 remainder 0)
+- -21 divided by 4 has an integer quotient of -6 (-21 ÷ 4 = -6 remainder 3)
+
+In many programming languages, the floor division operator (usually denoted as "//" or "div") is used to perform integer division and obtain the integer quotient.
+
+So, to summarize, when we discard the fractional part and only consider the whole number result of division, it is called the "integer quotient" or "floor quotient."
