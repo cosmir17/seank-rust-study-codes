@@ -15,6 +15,228 @@ mod array_diff_tests {
     }
 }
 
+#[cfg(test)]
+mod human_readable_duration_fomatter_tests {
+
+    //copied from solution
+    fn format_duration(seconds: u64) -> String {
+        let result = [
+            ("year", 31536000, 100000),
+            ("day", 86400, 365),
+            ("hour", 3600, 24),
+            ("minute", 60, 60),
+            ("second", 1, 60),
+        ].iter()
+            .map(|(unit, duration, modulo)| {
+                return ((seconds / duration) % modulo, unit)
+            })
+            .filter_map(|(duration, unit)| match duration {
+                _ if duration == 1 => Some(format!("{} {}", duration, unit)),
+                _ if duration != 0 => Some(format!("{} {}s", duration, unit)),
+                _ => None,
+            }).collect::<Vec<String>>();
+
+        match result.len() {
+            0 => String::from("now"),
+            1 => result.join(""),
+            _ => result
+                .split_last()
+                .map(|(r, l)| l.join(", ") + " and " + r)
+                .unwrap(),
+        }
+    }
+
+    #[test]
+    fn test_basic() {
+        assert_eq!(format_duration(1), "1 second");
+        assert_eq!(format_duration(62), "1 minute and 2 seconds");
+        assert_eq!(format_duration(120), "2 minutes");
+        assert_eq!(format_duration(3600), "1 hour");
+        assert_eq!(format_duration(3662), "1 hour, 1 minute and 2 seconds");
+    }
+}
+
+#[cfg(test)]
+mod pete_the_baker_tests {
+    use std::collections::HashMap;
+
+    fn cakes(recipe: &HashMap<&str, u32>, available: &HashMap<&str, u32>) -> u32 {
+        recipe
+            .into_iter()
+            .map(|(ingredient, &required_amount)| {
+                let available_amount = available.get(ingredient).unwrap_or(&0);
+                return available_amount / required_amount;
+            })
+            .min()
+            .unwrap_or(0)
+    }
+
+
+    macro_rules! map {
+        () => { HashMap::new() };
+        ($($ingredient:ident : $amount:expr),+) => {{
+            let mut map = HashMap::new();
+            $( map.insert(stringify!($ingredient), $amount); )*
+            map
+        }};
+    }
+
+    fn test(recipe: &HashMap<&str, u32>, available: &HashMap<&str, u32>, expected: u32) {
+        let actual = cakes(recipe, available);
+        assert!(actual == expected, "Expected to bake {expected} cakes, but got {actual} cakes instead.\nAvailable ingredients:\n  {available:?}\nRecipe:\n  {recipe:?}\n\n");
+    }
+
+    #[test]
+    fn test_example() {
+        let recipe = map!(flour: 500, sugar: 200, eggs: 1);
+        let available = map!(flour: 1200, sugar: 1200, eggs: 5, milk: 200);
+        test(&recipe, &available, 2);
+
+        let recipe = map!(apples: 3, flour: 300, sugar: 150, milk: 100, oil: 100);
+        let available = map!(sugar: 500, flour: 2000, milk: 2000);
+        test(&recipe, &available, 0);
+    }
+}
+
+
+#[cfg(test)]
+mod equal_sides_array_tests {
+    fn find_even_index(arr: &[i32]) -> Option<usize> {
+        let total_sum: i32 = arr.iter().sum();
+        let mut left_sum = 0;
+
+        for (i, &num) in arr.iter().enumerate() {
+            if left_sum == total_sum - (left_sum + num) {
+                return Some(i);
+            }
+            left_sum += num;
+        }
+
+        None
+    }
+
+    const ERR_MSG: &str = "\nYour result (left) did not match the expected output (right)";
+
+    fn dotest(arr: &[i32], expected: Option<usize>) {
+        assert_eq!(find_even_index(arr), expected, "{ERR_MSG} with arr = {arr:?}")
+    }
+
+    #[test]
+    fn fixed_tests() {
+        dotest(&[1, 2, 3, 4, 3, 2, 1], Some(3));
+        dotest(&[1, 100, 50, -51, 1, 1], Some(1));
+        dotest(&[1, 2, 3, 4, 5, 6], None);
+        dotest(&[20, 10, 30, 10, 10, 15, 35], Some(3));
+        dotest(&[20, 10, -80, 10, 10, 15, 35], Some(0));
+        dotest(&[10, -80, 10, 10, 15, 35, 20], Some(6));
+        dotest(&(1..100).collect::<Vec<_>>(), None);
+        dotest(&[0, 0, 0, 0, 0], Some(0));
+        dotest(&[-1, -2, -3, -4, -3, -2, -1], Some(3));
+        dotest(&(-100..-1).collect::<Vec<_>>(), None);
+        dotest(&[8, 8], None);
+        dotest(&[8, 0], Some(0));
+        dotest(&[0, 8], Some(1));
+        dotest(&[7, 3, -3], Some(0));
+        dotest(&[8], Some(0));
+        dotest(&[10, -10], None);
+        dotest(&[-3, 2, 1, 0], Some(3));
+        dotest(&[-15, 5, 11, 17, 19, -17, 20, -6, 17, -17, 19, 16, -15, -6, 20, 17], Some(8));
+    }
+}
+
+
+#[cfg(test)]
+mod rectangle_into_squares_tests {
+
+    fn sq_in_rect(lng: i32, wdth: i32) -> Option<Vec<i32>> {
+        if lng == wdth {
+            return None;
+        }
+
+        let mut squares = Vec::new();
+        let mut length = lng;
+        let mut width = wdth;
+
+        while length > 0 && width > 0 {
+            if length > width {
+                squares.push(width);
+                length -= width;
+            } else {
+                squares.push(length);
+                width -= length;
+            }
+        }
+
+        Some(squares)
+    }
+
+    fn testing(lng: i32, wdth: i32, exp: Option<Vec<i32>>) -> () {
+        assert_eq!(sq_in_rect(lng, wdth), exp)
+    }
+    #[test]
+    fn tests_sq_in_rect() {
+
+        testing(5, 3, Some(vec![3, 2, 1, 1]));
+        testing(3, 5, Some(vec![3, 2, 1, 1]));
+        testing(5, 5, None);
+
+    }
+}
+
+
+
+#[cfg(test)]
+mod directions_reduction_tests {
+
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    enum Direction {
+        North,
+        East,
+        West,
+        South,
+    }
+
+    fn get_last_result(result: &mut Vec<Direction>, dir: Direction) { //todo it doesn't work after refactoring
+        match (result.last(), dir) {
+            (Some(&result_direction), dir) if result_direction == dir => {
+                result.pop();
+            },
+            (_, dir) => {
+                result.push(dir);
+            },
+        }
+
+    }
+
+    fn dir_reduc(arr: &[Direction]) -> Vec<Direction> {
+        use Direction::*;
+
+        let mut result = Vec::new();
+
+        for &dir in arr {
+            match dir {
+                North => get_last_result(&mut result, South),
+                South => get_last_result(&mut result, North),
+                East => get_last_result(&mut result, West),
+                West => get_last_result(&mut result, East),
+            }
+        }
+
+        result
+    }
+
+    #[ignore]
+    fn basic() {
+        use Direction::*;
+
+        let a = [North, South, South, East, West, North, West];
+        assert_eq!(dir_reduc(&a), [West]);
+
+        let a = [North, West, South, East];
+        assert_eq!(dir_reduc(&a), [North, West, South, East]);
+    }
+}
+
 
 #[cfg(test)]
 mod duplicate_counter_tests {
