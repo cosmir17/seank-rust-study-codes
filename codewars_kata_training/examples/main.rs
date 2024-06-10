@@ -21,15 +21,15 @@ mod duplicate_counter_tests {
     use std::collections::HashMap;
 
     fn count_duplicates(text: &str) -> u32 {
-        let mut char_count = HashMap::new();
+        let mut char_grouped = HashMap::new();
 
         for c in text.to_lowercase().chars() {
             if c.is_alphanumeric() {
-                *char_count.entry(c).or_insert(0) += 1;
+                *char_grouped.entry(c).or_insert(0) += 1;
             }
         }
 
-        char_count.values().filter(|&count| *count > 1).count() as u32
+        char_grouped.values().filter(|count| **count > 1).count() as u32
     }
 
     #[test]
