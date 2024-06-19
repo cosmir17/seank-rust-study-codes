@@ -239,6 +239,41 @@ mod directions_reduction_tests {
 
 
 #[cfg(test)]
+mod fizz_buzz_tests {
+
+    pub trait Fizzy {
+        fn fizzy(&self);
+    }
+
+    impl Fizzy for i32 {
+        fn fizzy(&self) {
+            for i in 1..self + 1 {
+                println!("{}", convert_to_fizz_buzz(i))
+            }
+        }
+    }
+
+    fn convert_to_fizz_buzz(n: i32) -> String {
+        if n % (3 * 5) == 0 {
+            return String::from("FizzBuzz")
+        } else if n % 3 == 0 {
+            return String::from("Fizz")
+        } else if n % 5 == 0 {
+            return String::from("Buzz")
+        } else {
+            return n.to_string()
+        }
+    }
+
+    #[test]
+    fn main() {
+        for x in 1..=10 {
+            x.fizzy()
+        }
+    }
+}
+
+#[cfg(test)]
 mod duplicate_counter_tests {
     use std::collections::HashMap;
 
