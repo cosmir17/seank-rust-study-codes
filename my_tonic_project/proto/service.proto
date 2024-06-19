@@ -1,0 +1,46 @@
+// there was some proper names here. I modified them to anonymise
+
+syntax = "proto3";
+
+package service;
+
+service Controller {
+  rpc Connection(stream ClientMsg) returns (stream ServerMsg);
+}
+
+message ClientMsg {
+  int32 c = 3;
+}
+
+message Point {
+  float x = 1;
+}
+
+message Area {
+  Point n_point = 1;
+  Point m_point = 2;
+}
+
+message ServerMsg {
+  message SimOver {
+    bool success = 1;
+    optional string details = 2;
+  }
+
+  message SimStart {
+    Point l = 1;
+    Area limit = 2;
+    Area g = 3;
+  }
+
+  message SimUpdate {
+    Point l = 1;
+  }
+
+  oneof data {
+    SimStart start = 1;
+    SimOver ended = 2;
+    SimUpdate update = 3;
+  }
+}
+

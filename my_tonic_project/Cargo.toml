@@ -1,0 +1,33 @@
+[package]
+name = "seank-tonic-project-rs"
+version = "0.1.1"
+edition = "2021"
+
+[dependencies]
+tonic = "0.11.0"
+tokio = { version = "1", features = ["full"] }
+prost = "0.12.6"
+async-stream = "0.3.5"
+tokio-stream = "0.1.15"
+async-channel = "2.3.1"
+h2 = "0.3.26"
+log = "0.4.21"
+env_logger = "0.11.3"
+
+[build-dependencies]
+tonic-build = "0.11"
+
+[build-dependencies.config_struct]
+version = "~0.5.0"
+features = ["toml-parsing"]
+
+[dev-dependencies]
+tonic-mock = "0.3.0"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
+[[bin]]
+name = "mock_server"
+path = "src/mock_server.rs"

@@ -1,0 +1,3 @@
+# config.toml
+endpoint = "http://[::1]:50051"
+token = "Bearer MYTOKEN"
