@@ -32,6 +32,17 @@ This module delves into the world of Test-Driven Development (TDD) in Rust, show
 
 This module is replicated from the blog post ["Rust Unit and Integration Testing in RustRover"](https://blog.jetbrains.com/rust/2024/04/02/rust-unit-and-integration-testing-in-rustrover) and demonstrates a structured approach to unit and integration testing in Rust.
 
+### 7. `aws-rust-lambda-uk-weather`
+
+This project contains a Rust-based AWS Lambda function that fetches weather forecasts for specified cities and sends the information via email every two days. Key features include:
+
+- Fetches two-day weather forecasts using the OpenWeatherMap API
+- Sends formatted email reports with detailed weather information
+- Uses AWS Simple Email Service (SES) for sending emails
+- Designed to run every two days as a scheduled Lambda function
+
+This project demonstrates practical application of Rust in cloud computing, specifically with AWS Lambda, and showcases integration with external APIs and AWS services.
+
 ## Learning and Rust Nation UK 2024
 
 I have been diligently studying various resources, including the following books:
